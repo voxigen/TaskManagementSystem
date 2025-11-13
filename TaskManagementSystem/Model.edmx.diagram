@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="1b471971402b481ea3e9d2d4e4384904" Name="Diagram1" ZoomLevel="74">
+        <EntityTypeShape EntityType="TaskManagementSystemModel.Courses" Width="1.5" PointX="6" PointY="3.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaskManagementSystemModel.Feedback" Width="1.5" PointX="3" PointY="9.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaskManagementSystemModel.Files" Width="1.5" PointX="6" PointY="9.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaskManagementSystemModel.Notifications" Width="1.5" PointX="3" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaskManagementSystemModel.Students" Width="1.5" PointX="3" PointY="13.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaskManagementSystemModel.Submissions" Width="1.5" PointX="10.5" PointY="8.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaskManagementSystemModel.Tasks" Width="1.5" PointX="8.25" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaskManagementSystemModel.Teachers" Width="1.5" PointX="6" PointY="6.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="TaskManagementSystemModel.Users" Width="1.5" PointX="0.75" PointY="9.5" IsExpanded="true" />
+        <AssociationConnector Association="TaskManagementSystemModel.FK__Tasks__CourseId__4CA06362" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.FK__Feedback__Author__656C112C" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.FK__Feedback__Submis__6477ECF3" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.FK__Files__Submissio__59063A47" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.FK__Files__TaskId__5812160E" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.FK__Files__UploadedB__571DF1D5" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.FK__Notificat__Relat__60A75C0F" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.FK__Notificat__Relat__619B8048" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.FK__Notificat__UserI__5DCAEF64" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.FK__Students__UserId__3C69FB99" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.FK__Submissio__Stude__5165187F" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.FK__Submissio__TaskI__5070F446" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.FK__Tasks__TeacherUs__4D94879B" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.FK__Teachers__UserId__3F466844" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.CourseStudents" ManuallyRouted="false" />
+        <AssociationConnector Association="TaskManagementSystemModel.CourseTeachers" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
