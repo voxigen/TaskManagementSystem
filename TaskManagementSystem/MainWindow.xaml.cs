@@ -24,5 +24,55 @@ namespace TaskManagementSystem
         {
             InitializeComponent();
         }
+
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void RadioButton_Checked_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void RadioButton_Checked_2(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void RadioButton_Checked_3(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void RadioButton_Checked_4(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void RadioButton_Checked_5(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void NotificationsButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

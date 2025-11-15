@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="1b471971402b481ea3e9d2d4e4384904" Name="Diagram1" ZoomLevel="74">
+      <Diagram DiagramId="e2988feffe3949c48ba5aaa53946f1eb" Name="Diagram1">
         <EntityTypeShape EntityType="TaskManagementSystemModel.Courses" Width="1.5" PointX="6" PointY="3.125" IsExpanded="true" />
         <EntityTypeShape EntityType="TaskManagementSystemModel.Feedback" Width="1.5" PointX="3" PointY="9.875" IsExpanded="true" />
         <EntityTypeShape EntityType="TaskManagementSystemModel.Files" Width="1.5" PointX="6" PointY="9.625" IsExpanded="true" />
