@@ -25,15 +25,15 @@
                 <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="8,16">
                         <TextBlock Text="ОСНОВНОЕ" FontSize="11" FontWeight="SemiBold" Foreground="#bdc3c7" Margin="16,8,16,4"/>
-                        <RadioButton Content="📊 Дашборд" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" IsChecked="True" Checked="RadioButton_Checked"/>
-                        <RadioButton Content="📚 Мои курсы" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="RadioButton_Checked_1"/>
-                        <RadioButton Content="📝 Задания" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="RadioButton_Checked_2"/>
-                        <RadioButton Content="📨 Отправленные работы" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="RadioButton_Checked_3"/>
+                        <RadioButton Content="📊 Дашборд" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" IsChecked="True" Checked="Dashboard_Checked"/>
+                        <RadioButton Content="📚 Мои курсы" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="Courses_Checked"/>
+                        <RadioButton Content="📝 Задания" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="Tasks_Checked"/>
+                        <RadioButton Content="📨 Отправленные работы" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="Submissions_Checked"/>
                         <Separator Margin="16,12" Background="#34495e"/>
                         <TextBlock Text="ДОПОЛНИТЕЛЬНО" FontSize="11" FontWeight="SemiBold" Foreground="#bdc3c7" Margin="16,8,16,4"/>
-                        <RadioButton Content="📊 Отчеты" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="RadioButton_Checked_4"/>
-                        <RadioButton Content="👥 Пользователи" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Visibility="Collapsed"/>
-                        <RadioButton Content="⚙️ Настройки" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="RadioButton_Checked_5"/>
+                        <RadioButton Content="📊 Отчеты" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="Reports_Checked"/>
+                        <RadioButton x:Name="UsersNav" Content="👥 Пользователи" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="Users_Checked"/>
+                        <RadioButton Content="⚙️ Настройки" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="Settings_Checked"/>
                     </StackPanel>
                 </ScrollViewer>
 
@@ -46,10 +46,10 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="👤" Grid.Column="0" Foreground="White" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Иван Иванов" FontWeight="SemiBold" FontSize="12" Foreground="White" TextTrimming="CharacterEllipsis"/>
-                            <TextBlock Text="Студент" FontSize="10" Foreground="#bdc3c7"/>
+                            <TextBlock x:Name="UserNameText" Text="Иван Иванов" FontWeight="SemiBold" FontSize="12" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock x:Name="UserRoleText" Text="Студент" FontSize="10" Foreground="#bdc3c7"/>
                         </StackPanel>
-                        <Button Grid.Column="2" Background="Transparent" BorderThickness="0" Foreground="White" Padding="4" Cursor="Hand" ToolTip="Выйти из системы">
+                        <Button Grid.Column="2" Background="Transparent" BorderThickness="0" Foreground="White" Padding="4" Cursor="Hand" ToolTip="Выйти из системы" Click="LogoutButton_Click">
                             <TextBlock Text="🚪" FontSize="14"/>
                         </Button>
                     </Grid>
@@ -92,7 +92,7 @@
                                 <Border Background="#e74c3c" Width="6" Height="6" Margin="-8,-4,0,0" VerticalAlignment="Top" HorizontalAlignment="Right"/>
                             </StackPanel>
                         </Button>
-                        <Button Content="Создать задание" Background="#27ae60" Foreground="White" BorderThickness="0" Padding="12,6" FontWeight="SemiBold" Margin="8,0,0,0" Cursor="Hand" Visibility="Collapsed">
+                        <Button x:Name="CreateTaskButton" Content="Создать задание" Background="#27ae60" Foreground="White" BorderThickness="0" Padding="12,6" FontWeight="SemiBold" Margin="8,0,0,0" Cursor="Hand" Click="CreateTaskButton_Click">
                             <Button.Style>
                                 <Style TargetType="Button">
                                     <Style.Triggers>
@@ -107,103 +107,7 @@
                 </Grid>
             </Border>
 
-            <Border Grid.Row="1" Background="#f8f9fa" Padding="24">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
-                            <StackPanel>
-                                <TextBlock Text="Добро пожаловать, Иван Иванов!" FontSize="18" FontWeight="SemiBold" Foreground="#2c3e50"/>
-                                <TextBlock Text="Сегодня: понедельник, 15 мая 2024 года" FontSize="14" Foreground="#7f8c8d" Margin="0,4,0,0"/>
-                            </StackPanel>
-                        </Border>
-
-                        <TextBlock Text="🚨 СРОЧНЫЕ ЗАДАНИЯ (3)" FontSize="16" FontWeight="SemiBold" Foreground="#2c3e50" Margin="0,8,0,8"/>
-                        <WrapPanel>
-                            <Button Width="280" Height="120" Margin="0,0,16,16" Background="#fff5f5" BorderBrush="#e74c3c" BorderThickness="1" Padding="16" Cursor="Hand" Click="Button_Click">
-                                <StackPanel>
-                                    <TextBlock Text="МДК 01.03" FontWeight="Bold" Foreground="#2c3e50"/>
-                                    <TextBlock Text="Лаб. работа #2" FontSize="14" Margin="0,4,0,0"/>
-                                    <TextBlock Text="До: завтра" FontSize="12" Foreground="#e74c3c" Margin="0,8,0,0"/>
-                                    <TextBlock Text="⏰ 24 часа" FontSize="11" Foreground="#95a5a6" Margin="0,4,0,0"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Width="280" Height="120" Margin="0,0,16,16" Background="White" BorderBrush="#bdc3c7" BorderThickness="1" Padding="16" Cursor="Hand" Click="Button_Click_1">
-                                <StackPanel>
-                                    <TextBlock Text="ОП.05 БД" FontWeight="Bold" Foreground="#2c3e50"/>
-                                    <TextBlock Text="Проект БД" FontSize="14" Margin="0,4,0,0"/>
-                                    <TextBlock Text="До: через 2 дня" FontSize="12" Foreground="#f39c12" Margin="0,8,0,0"/>
-                                    <TextBlock Text="⏰ 48 часов" FontSize="11" Foreground="#95a5a6" Margin="0,4,0,0"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Width="280" Height="120" Margin="0,0,16,16" Background="White" BorderBrush="#bdc3c7" BorderThickness="1" Padding="16" Cursor="Hand" Click="Button_Click_2">
-                                <StackPanel>
-                                    <TextBlock Text="Иностранный язык" FontWeight="Bold" Foreground="#2c3e50"/>
-                                    <TextBlock Text="Эссе" FontSize="14" Margin="0,4,0,0"/>
-                                    <TextBlock Text="До: через 3 дня" FontSize="12" Foreground="#f39c12" Margin="0,8,0,0"/>
-                                    <TextBlock Text="⏰ 72 часа" FontSize="11" Foreground="#95a5a6" Margin="0,4,0,0"/>
-                                </StackPanel>
-                            </Button>
-                        </WrapPanel>
-
-                        <TextBlock Text="📈 ПРОГРЕСС ПО КУРСАМ" FontSize="16" FontWeight="SemiBold" Foreground="#2c3e50" Margin="0,16,0,8"/>
-                        <Border Style="{StaticResource CardStyle}">
-                            <StackPanel>
-                                <StackPanel Margin="0,0,0,12">
-                                    <Grid>
-                                        <TextBlock Text="МДК 01.03" FontWeight="SemiBold"/>
-                                        <TextBlock Text="60% (6/10 заданий)" HorizontalAlignment="Right" Foreground="#7f8c8d"/>
-                                    </Grid>
-                                    <Border Background="#ecf0f1" Height="8" Margin="0,4,0,0">
-                                        <Border Background="#3498db" Width="180" Height="8"/>
-                                    </Border>
-                                </StackPanel>
-                                <StackPanel Margin="0,0,0,12">
-                                    <Grid>
-                                        <TextBlock Text="ОП.05 БД" FontWeight="SemiBold"/>
-                                        <TextBlock Text="80% (8/10 заданий)" HorizontalAlignment="Right" Foreground="#7f8c8d"/>
-                                    </Grid>
-                                    <Border Background="#ecf0f1" Height="8" Margin="0,4,0,0">
-                                        <Border Background="#3498db" Width="240" Height="8"/>
-                                    </Border>
-                                </StackPanel>
-                                <StackPanel>
-                                    <Grid>
-                                        <TextBlock Text="Английский" FontWeight="SemiBold"/>
-                                        <TextBlock Text="25% (2/8 заданий)" HorizontalAlignment="Right" Foreground="#7f8c8d"/>
-                                    </Grid>
-                                    <Border Background="#ecf0f1" Height="8" Margin="0,4,0,0">
-                                        <Border Background="#3498db" Width="75" Height="8"/>
-                                    </Border>
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-
-                        <TextBlock Text="🔔 ПОСЛЕДНИЕ УВЕДОМЛЕНИЯ" FontSize="16" FontWeight="SemiBold" Foreground="#2c3e50" Margin="0,16,0,8"/>
-                        <Border Style="{StaticResource CardStyle}">
-                            <StackPanel>
-                                <Button Background="Transparent" BorderThickness="0" Padding="8" Cursor="Hand" HorizontalContentAlignment="Left">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="✅" FontSize="14" Margin="0,0,8,0"/>
-                                        <TextBlock Text="Ваша работа 'Лаб.работа #1' проверена - Оценка: 5" Foreground="#2c3e50"/>
-                                    </StackPanel>
-                                </Button>
-                                <Button Background="Transparent" BorderThickness="0" Padding="8" Cursor="Hand" HorizontalContentAlignment="Left">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="📝" FontSize="14" Margin="0,0,8,0"/>
-                                        <TextBlock Text="Преподаватель оставил комментарий к работе" Foreground="#2c3e50"/>
-                                    </StackPanel>
-                                </Button>
-                                <Button Background="Transparent" BorderThickness="0" Padding="8" Cursor="Hand" HorizontalContentAlignment="Left">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="🆕" FontSize="14" Margin="0,0,8,0"/>
-                                        <TextBlock Text="Новое задание: 'Проект БД' в курсе ОП.05" Foreground="#2c3e50"/>
-                                    </StackPanel>
-                                </Button>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </ScrollViewer>
-            </Border>
+            <Frame x:Name="MainContainer" Grid.Row="1" NavigationUIVisibility="Hidden"/>
         </Grid>
     </Grid>
 </Window>

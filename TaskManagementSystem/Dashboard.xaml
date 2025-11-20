@@ -1,0 +1,104 @@
+﻿<Page x:Class="TaskManagementSystem.Dashboard"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      Title="Dashboard">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24">
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Добро пожаловать, Иван Иванов!" FontSize="18" FontWeight="SemiBold" Foreground="#2c3e50"/>
+                    <TextBlock Text="Сегодня: понедельник, 15 мая 2024 года" FontSize="14" Foreground="#7f8c8d" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="🚨 СРОЧНЫЕ ЗАДАНИЯ (3)" FontSize="16" FontWeight="SemiBold" Foreground="#2c3e50" Margin="0,8,0,8"/>
+            <WrapPanel>
+                <Button Width="280" Height="120" Margin="0,0,16,16" Background="#fff5f5" BorderBrush="#e74c3c" BorderThickness="1" Padding="16" Cursor="Hand" Click="Task1_Click">
+                    <StackPanel>
+                        <TextBlock Text="МДК 01.03" FontWeight="Bold" Foreground="#2c3e50"/>
+                        <TextBlock Text="Лаб. работа #2" FontSize="14" Margin="0,4,0,0"/>
+                        <TextBlock Text="До: завтра" FontSize="12" Foreground="#e74c3c" Margin="0,8,0,0"/>
+                        <TextBlock Text="⏰ 24 часа" FontSize="11" Foreground="#95a5a6" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Button>
+                <Button Width="280" Height="120" Margin="0,0,16,16" Background="White" BorderBrush="#bdc3c7" BorderThickness="1" Padding="16" Cursor="Hand" Click="Task2_Click">
+                    <StackPanel>
+                        <TextBlock Text="ОП.05 БД" FontWeight="Bold" Foreground="#2c3e50"/>
+                        <TextBlock Text="Проект БД" FontSize="14" Margin="0,4,0,0"/>
+                        <TextBlock Text="До: через 2 дня" FontSize="12" Foreground="#f39c12" Margin="0,8,0,0"/>
+                        <TextBlock Text="⏰ 48 часов" FontSize="11" Foreground="#95a5a6" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Button>
+                <Button Width="280" Height="120" Margin="0,0,16,16" Background="White" BorderBrush="#bdc3c7" BorderThickness="1" Padding="16" Cursor="Hand" Click="Task3_Click">
+                    <StackPanel>
+                        <TextBlock Text="Иностранный язык" FontWeight="Bold" Foreground="#2c3e50"/>
+                        <TextBlock Text="Эссе" FontSize="14" Margin="0,4,0,0"/>
+                        <TextBlock Text="До: через 3 дня" FontSize="12" Foreground="#f39c12" Margin="0,8,0,0"/>
+                        <TextBlock Text="⏰ 72 часа" FontSize="11" Foreground="#95a5a6" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Button>
+            </WrapPanel>
+
+            <TextBlock Text="📈 ПРОГРЕСС ПО КУРСАМ" FontSize="16" FontWeight="SemiBold" Foreground="#2c3e50" Margin="0,16,0,8"/>
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <StackPanel Margin="0,0,0,12">
+                        <Grid>
+                            <TextBlock Text="МДК 01.03" FontWeight="SemiBold"/>
+                            <TextBlock Text="60% (6/10 заданий)" HorizontalAlignment="Right" Foreground="#7f8c8d"/>
+                        </Grid>
+                        <Border Background="#ecf0f1" Height="8" Margin="0,4,0,0">
+                            <Border Background="#3498db" Width="180" Height="8"/>
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,0,12">
+                        <Grid>
+                            <TextBlock Text="ОП.05 БД" FontWeight="SemiBold"/>
+                            <TextBlock Text="80% (8/10 заданий)" HorizontalAlignment="Right" Foreground="#7f8c8d"/>
+                        </Grid>
+                        <Border Background="#ecf0f1" Height="8" Margin="0,4,0,0">
+                            <Border Background="#3498db" Width="240" Height="8"/>
+                        </Border>
+                    </StackPanel>
+                    <StackPanel>
+                        <Grid>
+                            <TextBlock Text="Английский" FontWeight="SemiBold"/>
+                            <TextBlock Text="25% (2/8 заданий)" HorizontalAlignment="Right" Foreground="#7f8c8d"/>
+                        </Grid>
+                        <Border Background="#ecf0f1" Height="8" Margin="0,4,0,0">
+                            <Border Background="#3498db" Width="75" Height="8"/>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="🔔 ПОСЛЕДНИЕ УВЕДОМЛЕНИЯ" FontSize="16" FontWeight="SemiBold" Foreground="#2c3e50" Margin="0,16,0,8"/>
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <Button Background="Transparent" BorderThickness="0" Padding="8" Cursor="Hand" HorizontalContentAlignment="Left" Click="Notification1_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="✅" FontSize="14" Margin="0,0,8,0"/>
+                            <TextBlock Text="Ваша работа 'Лаб.работа #1' проверена - Оценка: 5" Foreground="#2c3e50"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Background="Transparent" BorderThickness="0" Padding="8" Cursor="Hand" HorizontalContentAlignment="Left" Click="Notification2_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📝" FontSize="14" Margin="0,0,8,0"/>
+                            <TextBlock Text="Преподаватель оставил комментарий к работе" Foreground="#2c3e50"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Background="Transparent" BorderThickness="0" Padding="8" Cursor="Hand" HorizontalContentAlignment="Left" Click="Notification3_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🆕" FontSize="14" Margin="0,0,8,0"/>
+                            <TextBlock Text="Новое задание: 'Проект БД' в курсе ОП.05" Foreground="#2c3e50"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
