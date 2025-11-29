@@ -1,18 +1,19 @@
-﻿using System.Windows;
+﻿using System.Data.Entity;
+using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 namespace TaskManagementSystem
 {
     public partial class LoginWindow : Window
     {
+        private TaskManagementSystemEntities3 _context;
+
         public LoginWindow()
         {
             InitializeComponent();
+            _context = new TaskManagementSystemEntities3();
             Loaded += (s, e) => LoginTextBox.Focus();
-        }
-
-        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
-        {
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -39,11 +40,11 @@ namespace TaskManagementSystem
                 return;
             }
 
-            if ((login == "student" && password == "123") ||
-                (login == "teacher" && password == "123") ||
-                (login == "admin" && password == "123"))
+            var user = _context.Users.FirstOrDefault(u => u.Login == login);
+
+            if (user != null && user.PasswordHash == password)
             {
-                MainWindow mainWindow = new MainWindow(login);
+                MainWindow mainWindow = new MainWindow(user);
                 mainWindow.Show();
                 this.Close();
             }

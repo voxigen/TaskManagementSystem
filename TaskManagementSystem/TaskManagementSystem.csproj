@@ -74,7 +74,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Courses.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
+      <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
     <Compile Include="CoursesView.xaml.cs">
       <DependentUpon>CoursesView.xaml</DependentUpon>
@@ -83,39 +83,55 @@
       <DependentUpon>Dashboard.xaml</DependentUpon>
     </Compile>
     <Compile Include="Feedback.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
+      <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
     <Compile Include="Files.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
+      <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
     <Compile Include="LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model1.cs">
+    <Compile Include="Model12.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Model1.tt</DependentUpon>
+      <DependentUpon>Model12.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model12.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model12.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model12.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model12.edmx</DependentUpon>
     </Compile>
     <Compile Include="Notifications.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
+      <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
     <Compile Include="Students.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
+      <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
     <Compile Include="Submissions.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
+      <DependentUpon>Model12.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SubmissionsView.xaml.cs">
+      <DependentUpon>SubmissionsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="sysdiagrams.cs">
+      <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
     <Compile Include="Tasks.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
+      <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
     <Compile Include="TasksView.xaml.cs">
       <DependentUpon>TasksView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Teachers.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
+      <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
     <Compile Include="Users.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
+      <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
     <Page Include="CoursesView.xaml">
       <SubType>Designer</SubType>
@@ -141,22 +157,16 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="SubmissionsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="TasksView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model1.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Model1.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model1.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Model1.edmx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -174,12 +184,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EntityDeploy Include="Model1.edmx">
+    <EntityDeploy Include="Model12.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>Model1.Designer.cs</LastGenOutput>
+      <LastGenOutput>Model12.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <None Include="Model1.edmx.diagram">
-      <DependentUpon>Model1.edmx</DependentUpon>
+    <None Include="Model12.edmx.diagram">
+      <DependentUpon>Model12.edmx</DependentUpon>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -216,15 +226,15 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Model1.Context.tt">
+    <Content Include="Model12.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Model1.Context.cs</LastGenOutput>
-      <DependentUpon>Model1.edmx</DependentUpon>
+      <DependentUpon>Model12.edmx</DependentUpon>
+      <LastGenOutput>Model12.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="Model1.tt">
+    <Content Include="Model12.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Model1.edmx</DependentUpon>
-      <LastGenOutput>Model1.cs</LastGenOutput>
+      <DependentUpon>Model12.edmx</DependentUpon>
+      <LastGenOutput>Model12.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

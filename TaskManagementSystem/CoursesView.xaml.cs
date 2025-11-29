@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -8,58 +10,64 @@ namespace TaskManagementSystem
 {
     public partial class CoursesView : Page
     {
-        public CoursesView()
+        private TaskManagementSystemEntities3 _context;
+        private Users _currentUser;
+
+        public CoursesView(Users user)
         {
             InitializeComponent();
+            _context = new TaskManagementSystemEntities3();
+            _currentUser = user;
             LoadCourses();
             SearchBox.TextChanged += SearchBox_TextChanged;
         }
 
         private void LoadCourses()
         {
-            var courses = new List<CourseModel>
+            var courses = new List<CourseModel>();
+
+            var student = _context.Students.FirstOrDefault(s => s.UserId == _currentUser.Id);
+            if (student != null)
             {
-                new CourseModel
+                var studentId = student.UserId;
+
+                var studentCourseIds = _context.Database.SqlQuery<int>(
+                    "SELECT CourseId FROM CourseStudents WHERE StudentUserId = {0}",
+                    studentId).ToList();
+
+                var studentCourses = _context.Courses
+                    .Where(c => studentCourseIds.Contains(c.Id))
+                    .ToList();
+
+                foreach (var course in studentCourses)
                 {
-                    CourseName = "МДК 01.03 - Технология разработки ПО",
-                    Instructor = "Преподаватель: Сидоров А.В.",
-                    NextAssignment = "Следующее задание: 15.05.2024",
-                    Progress = 60,
-                    TotalAssignments = 10,
-                    CompletedAssignments = 6,
-                    CardBackground = new SolidColorBrush(Color.FromRgb(255, 255, 255))
-                },
-                new CourseModel
-                {
-                    CourseName = "ОП.05 - Основы проектирования БД",
-                    Instructor = "Преподаватель: Иванова М.С.",
-                    NextAssignment = "Следующее задание: 20.05.2024",
-                    Progress = 80,
-                    TotalAssignments = 10,
-                    CompletedAssignments = 8,
-                    CardBackground = new SolidColorBrush(Color.FromRgb(255, 255, 255))
-                },
-                new CourseModel
-                {
-                    CourseName = "Иностранный язык в проф. деятельности",
-                    Instructor = "Преподаватель: Петрова Л.К.",
-                    NextAssignment = "Следующее задание: 10.05.2024",
-                    Progress = 25,
-                    TotalAssignments = 8,
-                    CompletedAssignments = 2,
-                    CardBackground = new SolidColorBrush(Color.FromRgb(255, 255, 255))
-                },
-                new CourseModel
-                {
-                    CourseName = "МДК 02.01 - Разработка мобильных приложений",
-                    Instructor = "Преподаватель: Козлов Д.С.",
-                    NextAssignment = "Следующее задание: 25.05.2024",
-                    Progress = 45,
-                    TotalAssignments = 12,
-                    CompletedAssignments = 5,
-                    CardBackground = new SolidColorBrush(Color.FromRgb(255, 255, 255))
+                    var courseTasks = _context.Tasks.Where(t => t.CourseId == course.Id).ToList();
+                    var submittedTasks = courseTasks.Count(t => _context.Submissions.Any(s => s.TaskId == t.Id && s.StudentUserId == studentId));
+                    var totalTasks = courseTasks.Count;
+                    var progress = totalTasks > 0 ? (int)((double)submittedTasks / totalTasks * 100) : 0;
+
+                    var nextAssignment = courseTasks
+                        .Where(t => t.Deadline > DateTime.Now && !_context.Submissions.Any(s => s.TaskId == t.Id && s.StudentUserId == studentId))
+                        .OrderBy(t => t.Deadline)
+                        .FirstOrDefault();
+
+                    var teacher = _context.Database.SqlQuery<Users>(
+                        "SELECT u.* FROM Users u INNER JOIN Teachers t ON u.Id = t.UserId INNER JOIN CourseTeachers ct ON t.UserId = ct.TeacherUserId WHERE ct.CourseId = {0}",
+                        course.Id).FirstOrDefault();
+
+                    courses.Add(new CourseModel
+                    {
+                        CourseId = course.Id,
+                        CourseName = course.Title,
+                        Instructor = teacher != null ? $"Преподаватель: {teacher.FullName}" : "Преподаватель не назначен",
+                        NextAssignment = nextAssignment != null ? $"Следующее задание: {nextAssignment.Deadline:dd.MM.yyyy}" : "Нет активных заданий",
+                        Progress = progress,
+                        TotalAssignments = totalTasks,
+                        CompletedAssignments = submittedTasks,
+                        CardBackground = Brushes.White
+                    });
                 }
-            };
+            }
 
             CoursesItemsControl.ItemsSource = courses;
             UpdateCoursesVisibility();
@@ -76,11 +84,11 @@ namespace TaskManagementSystem
 
             if (string.IsNullOrWhiteSpace(searchText) || searchText == "поиск...")
             {
-                CoursesItemsControl.ItemsSource = GetSampleCourses();
+                CoursesItemsControl.ItemsSource = GetCoursesFromDatabase();
             }
             else
             {
-                var filteredCourses = GetSampleCourses().FindAll(c =>
+                var filteredCourses = GetCoursesFromDatabase().FindAll(c =>
                     c.CourseName.ToLower().Contains(searchText) ||
                     c.Instructor.ToLower().Contains(searchText));
                 CoursesItemsControl.ItemsSource = filteredCourses;
@@ -89,38 +97,54 @@ namespace TaskManagementSystem
             UpdateCoursesVisibility();
         }
 
-        private List<CourseModel> GetSampleCourses()
+        private List<CourseModel> GetCoursesFromDatabase()
         {
-            return new List<CourseModel>
+            var courses = new List<CourseModel>();
+
+            var student = _context.Students.FirstOrDefault(s => s.UserId == _currentUser.Id);
+            if (student != null)
             {
-                new CourseModel
+                var studentId = student.UserId;
+
+                var studentCourseIds = _context.Database.SqlQuery<int>(
+                    "SELECT CourseId FROM CourseStudents WHERE StudentUserId = {0}",
+                    studentId).ToList();
+
+                var studentCourses = _context.Courses
+                    .Where(c => studentCourseIds.Contains(c.Id))
+                    .ToList();
+
+                foreach (var course in studentCourses)
                 {
-                    CourseName = "МДК 01.03 - Технология разработки ПО",
-                    Instructor = "Преподаватель: Сидоров А.В.",
-                    NextAssignment = "Следующее задание: 15.05.2024",
-                    Progress = 60,
-                    TotalAssignments = 10,
-                    CompletedAssignments = 6
-                },
-                new CourseModel
-                {
-                    CourseName = "ОП.05 - Основы проектирования БД",
-                    Instructor = "Преподаватель: Иванова М.С.",
-                    NextAssignment = "Следующее задание: 20.05.2024",
-                    Progress = 80,
-                    TotalAssignments = 10,
-                    CompletedAssignments = 8
-                },
-                new CourseModel
-                {
-                    CourseName = "Иностранный язык в проф. деятельности",
-                    Instructor = "Преподаватель: Петрова Л.К.",
-                    NextAssignment = "Следующее задание: 10.05.2024",
-                    Progress = 25,
-                    TotalAssignments = 8,
-                    CompletedAssignments = 2
+                    var courseTasks = _context.Tasks.Where(t => t.CourseId == course.Id).ToList();
+                    var submittedTasks = courseTasks.Count(t => _context.Submissions.Any(s => s.TaskId == t.Id && s.StudentUserId == studentId));
+                    var totalTasks = courseTasks.Count;
+                    var progress = totalTasks > 0 ? (int)((double)submittedTasks / totalTasks * 100) : 0;
+
+                    var nextAssignment = courseTasks
+                        .Where(t => t.Deadline > DateTime.Now && !_context.Submissions.Any(s => s.TaskId == t.Id && s.StudentUserId == studentId))
+                        .OrderBy(t => t.Deadline)
+                        .FirstOrDefault();
+
+                    var teacher = _context.Database.SqlQuery<Users>(
+                        "SELECT u.* FROM Users u INNER JOIN Teachers t ON u.Id = t.UserId INNER JOIN CourseTeachers ct ON t.UserId = ct.TeacherUserId WHERE ct.CourseId = {0}",
+                        course.Id).FirstOrDefault();
+
+                    courses.Add(new CourseModel
+                    {
+                        CourseId = course.Id,
+                        CourseName = course.Title,
+                        Instructor = teacher != null ? $"Преподаватель: {teacher.FullName}" : "Преподаватель не назначен",
+                        NextAssignment = nextAssignment != null ? $"Следующее задание: {nextAssignment.Deadline:dd.MM.yyyy}" : "Нет активных заданий",
+                        Progress = progress,
+                        TotalAssignments = totalTasks,
+                        CompletedAssignments = submittedTasks,
+                        CardBackground = Brushes.White
+                    });
                 }
-            };
+            }
+
+            return courses;
         }
 
         private void UpdateCoursesVisibility()
@@ -161,6 +185,7 @@ namespace TaskManagementSystem
 
     public class CourseModel
     {
+        public int CourseId { get; set; }
         public string CourseName { get; set; }
         public string Instructor { get; set; }
         public string NextAssignment { get; set; }
@@ -169,9 +194,9 @@ namespace TaskManagementSystem
         public int CompletedAssignments { get; set; }
 
         public string ProgressText => $"{Progress}% ({CompletedAssignments}/{TotalAssignments})";
-        public double ProgressWidth => Progress * 3; 
-        public Brush ProgressColor => Progress >= 80 ? Brushes.Lavender : 
-                                     Progress >= 60 ? Brushes.DarkBlue : 
+        public double ProgressWidth => Progress * 3;
+        public Brush ProgressColor => Progress >= 80 ? Brushes.Lavender :
+                                     Progress >= 60 ? Brushes.DarkBlue :
                                      Progress >= 40 ? Brushes.Firebrick : Brushes.ForestGreen;
         public Brush CardBackground { get; set; } = Brushes.White;
     }

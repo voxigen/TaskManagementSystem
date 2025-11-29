@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="e2988feffe3949c48ba5aaa53946f1eb" Name="Diagram1">
+      <Diagram DiagramId="d6e700b9fb53472c91b7f1375e76d6a0" Name="Diagram1" ZoomLevel="83">
         <EntityTypeShape EntityType="TaskManagementSystemModel.Courses" Width="1.5" PointX="6" PointY="3.125" IsExpanded="true" />
         <EntityTypeShape EntityType="TaskManagementSystemModel.Feedback" Width="1.5" PointX="3" PointY="9.875" IsExpanded="true" />
         <EntityTypeShape EntityType="TaskManagementSystemModel.Files" Width="1.5" PointX="6" PointY="9.625" IsExpanded="true" />
@@ -30,6 +30,7 @@
         <AssociationConnector Association="TaskManagementSystemModel.FK__Teachers__UserId__3F466844" ManuallyRouted="false" />
         <AssociationConnector Association="TaskManagementSystemModel.CourseStudents" ManuallyRouted="false" />
         <AssociationConnector Association="TaskManagementSystemModel.CourseTeachers" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="TaskManagementSystemModel.sysdiagrams" Width="1.5" PointX="0.75" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

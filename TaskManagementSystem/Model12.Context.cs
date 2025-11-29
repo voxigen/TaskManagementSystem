@@ -13,10 +13,10 @@ namespace TaskManagementSystem
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class TaskManagementSystemEntities2 : DbContext
+    public partial class TaskManagementSystemEntities3 : DbContext
     {
-        public TaskManagementSystemEntities2()
-            : base("name=TaskManagementSystemEntities2")
+        public TaskManagementSystemEntities3()
+            : base("name=TaskManagementSystemEntities3")
         {
         }
     
@@ -34,5 +34,6 @@ namespace TaskManagementSystem
         public DbSet<Tasks> Tasks { get; set; }
         public DbSet<Teachers> Teachers { get; set; }
         public DbSet<Users> Users { get; set; }
+        public DbSet<sysdiagrams> sysdiagrams { get; set; }
     }
 }

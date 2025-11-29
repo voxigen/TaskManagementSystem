@@ -6,35 +6,34 @@ namespace TaskManagementSystem
     public partial class MainWindow : Window
     {
         private string currentUserRole;
+        private Users _currentUser;
 
-        public MainWindow(string username)
+        public MainWindow(Users user)
         {
             InitializeComponent();
-            InitializeUserData(username);
-            MainContainer.Navigate(new Dashboard());
+            _currentUser = user;
+            InitializeUserData(user);
+            MainContainer.Navigate(new Dashboard(user));
         }
 
-        private void InitializeUserData(string username)
+        private void InitializeUserData(Users user)
         {
-            switch (username)
+            UserNameText.Text = user.FullName;
+            UserRoleText.Text = user.Role;
+
+            switch (user.Role)
             {
-                case "student":
-                    UserNameText.Text = "Иван Иванов";
-                    UserRoleText.Text = "Студент";
+                case "Student":
                     currentUserRole = "student";
                     CreateTaskButton.Visibility = Visibility.Collapsed;
                     UsersNav.Visibility = Visibility.Collapsed;
                     break;
-                case "teacher":
-                    UserNameText.Text = "Петр Петрович";
-                    UserRoleText.Text = "Преподаватель";
+                case "Teacher":
                     currentUserRole = "teacher";
                     CreateTaskButton.Visibility = Visibility.Visible;
                     UsersNav.Visibility = Visibility.Collapsed;
                     break;
-                case "admin":
-                    UserNameText.Text = "Администратор";
-                    UserRoleText.Text = "Администратор";
+                case "Administrator":
                     currentUserRole = "admin";
                     CreateTaskButton.Visibility = Visibility.Visible;
                     UsersNav.Visibility = Visibility.Visible;
@@ -45,7 +44,7 @@ namespace TaskManagementSystem
         private void Dashboard_Checked(object sender, RoutedEventArgs e)
         {
             if (MainContainer != null)
-                MainContainer.Navigate(new Dashboard());
+                MainContainer.Navigate(new Dashboard(_currentUser));
 
             if (PageTitle != null)
                 PageTitle.Text = "Дашборд";
@@ -56,7 +55,8 @@ namespace TaskManagementSystem
 
         private void Courses_Checked(object sender, RoutedEventArgs e)
         {
-            MainContainer.Navigate(new CoursesView());
+            var coursesView = new CoursesView(_currentUser);
+            MainContainer.Navigate(coursesView);
             PageTitle.Text = "Мои курсы";
             PageSubtitle.Text = "Список учебных курсов";
         }
@@ -68,10 +68,15 @@ namespace TaskManagementSystem
             PageSubtitle.Text = "Все задания и дедлайны";
         }
 
-        private void Submissions_Checked(object sender, RoutedEventArgs e)
+    
+            private void Submissions_Checked(object sender, RoutedEventArgs e)
         {
-            ShowSimplePage("Отправленные работы", "История сданных работ");
+            var submissionsView = new SubmissionsView(_currentUser);
+            MainContainer.Navigate(submissionsView);
+            PageTitle.Text = "Отправленные работы";
+            PageSubtitle.Text = "История сданных работ";
         }
+        
 
         private void Reports_Checked(object sender, RoutedEventArgs e)
         {
