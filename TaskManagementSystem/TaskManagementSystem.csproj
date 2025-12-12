@@ -73,11 +73,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CourseEditWindow.xaml.cs">
+      <DependentUpon>CourseEditWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CourseManagementWindow.xaml.cs">
+      <DependentUpon>CourseManagementWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Courses.cs">
       <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
+    <Compile Include="CourseStudentsManagementWindow.xaml.cs">
+      <DependentUpon>CourseStudentsManagementWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CoursesView.xaml.cs">
       <DependentUpon>CoursesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CourseTeachersManagementWindow.xaml.cs">
+      <DependentUpon>CourseTeachersManagementWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dashboard.xaml.cs">
       <DependentUpon>Dashboard.xaml</DependentUpon>
@@ -109,6 +121,7 @@
     <Compile Include="Notifications.cs">
       <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
+    <Compile Include="PasswordHasher.cs" />
     <Compile Include="Students.cs">
       <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
@@ -121,6 +134,9 @@
     <Compile Include="sysdiagrams.cs">
       <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
+    <Compile Include="TaskCreateWindow.xaml.cs">
+      <DependentUpon>TaskCreateWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Tasks.cs">
       <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
@@ -130,10 +146,29 @@
     <Compile Include="Teachers.cs">
       <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
+    <Compile Include="UserManagementWindow.xaml.cs">
+      <DependentUpon>UserManagementWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Users.cs">
       <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
+    <Page Include="CourseEditWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CourseManagementWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CourseStudentsManagementWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CoursesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CourseTeachersManagementWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -161,7 +196,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="TaskCreateWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="TasksView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserManagementWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

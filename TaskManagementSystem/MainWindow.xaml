@@ -12,8 +12,10 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
+        
         <Border Grid.Column="0" Background="#2c3e50" BorderBrush="#34495e" BorderThickness="0,0,1,0">
             <DockPanel>
+            
                 <Border DockPanel.Dock="Top" Background="#3498db" Padding="20,25">
                     <StackPanel>
                         <TextBlock Text="📚" FontSize="28" HorizontalAlignment="Left"/>
@@ -22,21 +24,32 @@
                     </StackPanel>
                 </Border>
 
+               
                 <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="8,16">
                         <TextBlock Text="ОСНОВНОЕ" FontSize="11" FontWeight="SemiBold" Foreground="#bdc3c7" Margin="16,8,16,4"/>
+
+                      
                         <RadioButton Content="📊 Дашборд" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" IsChecked="True" Checked="Dashboard_Checked"/>
                         <RadioButton Content="📚 Мои курсы" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="Courses_Checked"/>
                         <RadioButton Content="📝 Задания" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="Tasks_Checked"/>
                         <RadioButton Content="📨 Отправленные работы" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="Submissions_Checked"/>
+
                         <Separator Margin="16,12" Background="#34495e"/>
                         <TextBlock Text="ДОПОЛНИТЕЛЬНО" FontSize="11" FontWeight="SemiBold" Foreground="#bdc3c7" Margin="16,8,16,4"/>
-                        <RadioButton Content="📊 Отчеты" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="Reports_Checked"/>
+
+                       
+                        <RadioButton x:Name="ReportsNav" Content="📊 Отчеты" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="Reports_Checked"/>
+                        <RadioButton x:Name="TaskCreateNav" Content="➕ Создать задание" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="TaskCreate_Checked"/>
+
+                       
+                        <RadioButton x:Name="CourseManagementNav" Content="📚 Управление курсами" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="CourseManagement_Checked"/>
                         <RadioButton x:Name="UsersNav" Content="👥 Пользователи" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="Users_Checked"/>
-                        <RadioButton Content="⚙️ Настройки" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="Settings_Checked"/>
+                        <RadioButton x:Name="SystemNav" Content="⚙️ Настройки системы" Style="{StaticResource MenuButtonStyle}" GroupName="Navigation" Foreground="White" Checked="System_Checked"/>
                     </StackPanel>
                 </ScrollViewer>
 
+               
                 <Border DockPanel.Dock="Bottom" Background="#34495e" BorderBrush="#2c3e50" BorderThickness="0,1,0,0" Padding="16,12">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -46,8 +59,8 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="👤" Grid.Column="0" Foreground="White" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock x:Name="UserNameText" Text="Иван Иванов" FontWeight="SemiBold" FontSize="12" Foreground="White" TextTrimming="CharacterEllipsis"/>
-                            <TextBlock x:Name="UserRoleText" Text="Студент" FontSize="10" Foreground="#bdc3c7"/>
+                            <TextBlock x:Name="UserNameText" Text="" FontWeight="SemiBold" FontSize="12" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock x:Name="UserRoleText" Text="" FontSize="10" Foreground="#bdc3c7"/>
                         </StackPanel>
                         <Button Grid.Column="2" Background="Transparent" BorderThickness="0" Foreground="White" Padding="4" Cursor="Hand" ToolTip="Выйти из системы" Click="LogoutButton_Click">
                             <TextBlock Text="🚪" FontSize="14"/>
@@ -57,22 +70,28 @@
             </DockPanel>
         </Border>
 
+        
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+           
             <Border Grid.Row="0" Background="White" BorderBrush="#ecf0f1" BorderThickness="0,0,0,1" Padding="24,16">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
+
+                  
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock x:Name="PageTitle" Text="Дашборд" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center"/>
                         <TextBlock x:Name="PageSubtitle" Text="Обзор системы" FontSize="14" Foreground="#7f8c8d" VerticalAlignment="Center" Margin="8,4,0,0"/>
                     </StackPanel>
+
+                 
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                         <TextBox x:Name="SearchBox" Text="Поиск..." Width="200" Height="32" Padding="8,4" BorderBrush="#bdc3c7" BorderThickness="1" Margin="0,0,12,0">
                             <TextBox.Style>
@@ -86,13 +105,20 @@
                                 </Style>
                             </TextBox.Style>
                         </TextBox>
+
                         <Button x:Name="NotificationsButton" Background="Transparent" BorderThickness="0" Padding="8" Cursor="Hand" ToolTip="Уведомления" Click="NotificationsButton_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="🔔" FontSize="16"/>
-                                <Border Background="#e74c3c" Width="6" Height="6" Margin="-8,-4,0,0" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                                <Border x:Name="NotificationBadge" Background="#e74c3c" Width="6" Height="6" Margin="-8,-4,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Visibility="Collapsed"/>
                             </StackPanel>
                         </Button>
-                        <Button x:Name="CreateTaskButton" Content="Создать задание" Background="#27ae60" Foreground="White" BorderThickness="0" Padding="12,6" FontWeight="SemiBold" Margin="8,0,0,0" Cursor="Hand" Click="CreateTaskButton_Click">
+
+                      
+                        <Button x:Name="CreateTaskButton" Content="➕ Создать задание" 
+                               Background="#27ae60" Foreground="White" 
+                               BorderThickness="0" Padding="12,6" FontWeight="SemiBold" 
+                               Margin="8,0,0,0" Cursor="Hand" Click="CreateTaskButton_Click"
+                               Visibility="Visible">
                             <Button.Style>
                                 <Style TargetType="Button">
                                     <Style.Triggers>
@@ -103,10 +129,27 @@
                                 </Style>
                             </Button.Style>
                         </Button>
+
+                        <Button x:Name="QuickActionsButton" Content="⚡ Быстрые действия" 
+                               Background="#9b59b6" Foreground="White" 
+                               BorderThickness="0" Padding="12,6" FontWeight="SemiBold" 
+                               Margin="8,0,0,0" Cursor="Hand" Click="QuickActionsButton_Click"
+                               Visibility="Collapsed">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#8e44ad"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>
 
+       
             <Frame x:Name="MainContainer" Grid.Row="1" NavigationUIVisibility="Hidden"/>
         </Grid>
     </Grid>

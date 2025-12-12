@@ -13,17 +13,46 @@ namespace TaskManagementSystem
         private TaskManagementSystemEntities3 _context;
         private Users _currentUser;
         private List<SubmissionModel> allSubmissions;
+        private bool isInitialized = false;
 
         public SubmissionsView(Users user)
         {
             InitializeComponent();
             _context = new TaskManagementSystemEntities3();
             _currentUser = user;
-            LoadSubmissions();
-            LoadFilters();
+
+          
+            this.Loaded += (s, e) =>
+            {
+                isInitialized = true;
+                LoadSubmissions();
+                LoadFilters();
+            };
         }
 
         private void LoadSubmissions()
+        {
+            if (!isInitialized) return;
+
+            allSubmissions = new List<SubmissionModel>();
+
+            switch (_currentUser.Role)
+            {
+                case "Student":
+                    LoadStudentSubmissions();
+                    break;
+                case "Teacher":
+                    LoadTeacherSubmissions();
+                    break;
+                case "Administrator":
+                    LoadAllSubmissions();
+                    break;
+            }
+
+            GenerateSubmissionGroups();
+        }
+
+        private void LoadStudentSubmissions()
         {
             var student = _context.Students.FirstOrDefault(s => s.UserId == _currentUser.Id);
             if (student == null) return;
@@ -40,18 +69,97 @@ namespace TaskManagementSystem
                                   TaskTitle = t.Title,
                                   CourseName = c.Title,
                                   CourseId = c.Id,
-                                 
+                                  SubmittedDate = s.SubmittedAt ?? DateTime.MinValue,
                                   Status = s.Status,
                                   Score = s.Score,
                                   TeacherComment = s.TeacherComment,
                                   TaskDescription = t.Description,
-                                  Deadline = t.Deadline
+                                  Deadline = t.Deadline,
+                                  StudentName = _currentUser.FullName
                               }).ToList();
+        }
 
-            GenerateSubmissionGroups();
+        private void LoadTeacherSubmissions()
+        {
+            var teacher = _context.Teachers.FirstOrDefault(t => t.UserId == _currentUser.Id);
+            if (teacher == null) return;
+
+            var teacherId = teacher.UserId;
+
+    
+            var teacherCourseIds = _context.Database.SqlQuery<int>(
+                "SELECT CourseId FROM CourseTeachers WHERE TeacherUserId = {0}",
+                teacherId).ToList();
+
+
+            allSubmissions = (from s in _context.Submissions
+                              join t in _context.Tasks on s.TaskId equals t.Id
+                              join c in _context.Courses on t.CourseId equals c.Id
+                              join u in _context.Users on s.StudentUserId equals u.Id
+                              where teacherCourseIds.Contains(c.Id) && t.TeacherUserId == teacherId
+                              select new SubmissionModel
+                              {
+                                  Id = s.Id,
+                                  TaskTitle = t.Title,
+                                  CourseName = c.Title,
+                                  CourseId = c.Id,
+                                  SubmittedDate = s.SubmittedAt ?? DateTime.MinValue,
+                                  Status = s.Status,
+                                  Score = s.Score,
+                                  TeacherComment = s.TeacherComment,
+                                  TaskDescription = t.Description,
+                                  Deadline = t.Deadline,
+                                  StudentName = u.FullName,
+                                  StudentId = u.Id
+                              }).ToList();
+        }
+
+        private void LoadAllSubmissions()
+        {
+       
+            allSubmissions = (from s in _context.Submissions
+                              join t in _context.Tasks on s.TaskId equals t.Id
+                              join c in _context.Courses on t.CourseId equals c.Id
+                              join u in _context.Users on s.StudentUserId equals u.Id
+                              select new SubmissionModel
+                              {
+                                  Id = s.Id,
+                                  TaskTitle = t.Title,
+                                  CourseName = c.Title,
+                                  CourseId = c.Id,
+                                  SubmittedDate = s.SubmittedAt ?? DateTime.MinValue,
+                                  Status = s.Status,
+                                  Score = s.Score,
+                                  TeacherComment = s.TeacherComment,
+                                  TaskDescription = t.Description,
+                                  Deadline = t.Deadline,
+                                  StudentName = u.FullName,
+                                  StudentId = u.Id
+                              }).ToList();
         }
 
         private void LoadFilters()
+        {
+            if (!isInitialized) return;
+
+            CourseFilter.Items.Clear();
+            CourseFilter.Items.Add(new ComboBoxItem { Content = "Все курсы" });
+
+            switch (_currentUser.Role)
+            {
+                case "Student":
+                    LoadStudentFilters();
+                    break;
+                case "Teacher":
+                    LoadTeacherFilters();
+                    break;
+                case "Administrator":
+                    LoadAdminFilters();
+                    break;
+            }
+        }
+
+        private void LoadStudentFilters()
         {
             var student = _context.Students.FirstOrDefault(s => s.UserId == _currentUser.Id);
             if (student == null) return;
@@ -68,26 +176,62 @@ namespace TaskManagementSystem
             }
         }
 
+        private void LoadTeacherFilters()
+        {
+            var teacher = _context.Teachers.FirstOrDefault(t => t.UserId == _currentUser.Id);
+            if (teacher == null) return;
+
+            var teacherId = teacher.UserId;
+
+            var teacherCourses = _context.Database.SqlQuery<string>(
+                "SELECT DISTINCT c.Title FROM Courses c INNER JOIN CourseTeachers ct ON c.Id = ct.CourseId WHERE ct.TeacherUserId = {0}",
+                teacherId).ToList();
+
+            foreach (var course in teacherCourses)
+            {
+                CourseFilter.Items.Add(new ComboBoxItem { Content = course });
+            }
+        }
+
+        private void LoadAdminFilters()
+        {
+            var allCourses = _context.Courses.Select(c => c.Title).Distinct().ToList();
+            foreach (var course in allCourses)
+            {
+                CourseFilter.Items.Add(new ComboBoxItem { Content = course });
+            }
+        }
+
         private void GenerateSubmissionGroups()
         {
-            SubmissionsContainer.Children.Clear();
+            if (!isInitialized || SubmissionsContainer == null) return;
 
-            var filteredSubmissions = FilterSubmissions();
+            try
+            {
+                SubmissionsContainer.Children.Clear();
 
-            var underReview = filteredSubmissions.Where(s => s.Status == "Submitted" || s.Status == "Under Review").ToList();
-            var completed = filteredSubmissions.Where(s => s.Status == "Completed").ToList();
-            var returned = filteredSubmissions.Where(s => s.Status == "Returned" || s.Status == "Rejected").ToList();
+                var filteredSubmissions = FilterSubmissions();
 
-            if (underReview.Any())
-                AddSubmissionGroup("🟡 НА ПРОВЕРКЕ", underReview, "#fff8e1");
+                var underReview = filteredSubmissions.Where(s => s.Status == "Submitted" || s.Status == "Under Review").ToList();
+                var completed = filteredSubmissions.Where(s => s.Status == "Completed").ToList();
+                var returned = filteredSubmissions.Where(s => s.Status == "Returned" || s.Status == "Rejected").ToList();
 
-            if (completed.Any())
-                AddSubmissionGroup("✅ ПРОВЕРЕННЫЕ", completed, "#e8f5e8");
+                if (underReview.Any())
+                    AddSubmissionGroup("🟡 НА ПРОВЕРКЕ", underReview, "#fff8e1");
 
-            if (returned.Any())
-                AddSubmissionGroup("🔴 ВОЗВРАЩЕННЫЕ", returned, "#ffebee");
+                if (completed.Any())
+                    AddSubmissionGroup("✅ ПРОВЕРЕННЫЕ", completed, "#e8f5e8");
 
-            UpdateSubmissionsVisibility();
+                if (returned.Any())
+                    AddSubmissionGroup("🔴 ВОЗВРАЩЕННЫЕ", returned, "#ffebee");
+
+                UpdateSubmissionsVisibility();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке отправленных работ: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void AddSubmissionGroup(string groupTitle, List<SubmissionModel> submissions, string backgroundColor)
@@ -130,7 +274,8 @@ namespace TaskManagementSystem
                 BorderThickness = new Thickness(1),
                 Margin = new Thickness(0, 0, 0, 8),
                 Padding = new Thickness(16),
-                CornerRadius = new CornerRadius(4)
+                CornerRadius = new CornerRadius(4),
+                Tag = submission
             };
 
             var grid = new Grid();
@@ -147,7 +292,8 @@ namespace TaskManagementSystem
             {
                 Text = submission.TaskTitle,
                 FontWeight = FontWeights.SemiBold,
-                Foreground = (Brush)new BrushConverter().ConvertFrom("#2c3e50")
+                Foreground = (Brush)new BrushConverter().ConvertFrom("#2c3e50"),
+                TextWrapping = TextWrapping.Wrap
             };
             Grid.SetColumn(titleText, 0);
 
@@ -162,6 +308,18 @@ namespace TaskManagementSystem
             titleGrid.Children.Add(titleText);
             titleGrid.Children.Add(courseText);
             leftPanel.Children.Add(titleGrid);
+
+        
+            if (_currentUser.Role != "Student" && !string.IsNullOrEmpty(submission.StudentName))
+            {
+                leftPanel.Children.Add(new TextBlock
+                {
+                    Text = $"👤 Студент: {submission.StudentName}",
+                    FontSize = 12,
+                    Foreground = (Brush)new BrushConverter().ConvertFrom("#3498db"),
+                    Margin = new Thickness(0, 4, 0, 0)
+                });
+            }
 
             var dateText = new TextBlock
             {
@@ -211,10 +369,29 @@ namespace TaskManagementSystem
                 FontWeight = FontWeights.SemiBold,
                 BorderThickness = new Thickness(0),
                 Margin = new Thickness(8, 0, 0, 0),
-                Tag = submission
+                Tag = submission,
+                Cursor = System.Windows.Input.Cursors.Hand
             };
             detailsButton.Click += DetailsButton_Click;
             buttonPanel.Children.Add(detailsButton);
+
+          
+            if (_currentUser.Role == "Teacher" && (submission.Status == "Submitted" || submission.Status == "Under Review"))
+            {
+                var gradeButton = new Button
+                {
+                    Content = "Оценить",
+                    Background = (Brush)new BrushConverter().ConvertFrom("#27ae60"),
+                    Foreground = Brushes.White,
+                    FontWeight = FontWeights.SemiBold,
+                    BorderThickness = new Thickness(0),
+                    Margin = new Thickness(8, 0, 0, 0),
+                    Tag = submission,
+                    Cursor = System.Windows.Input.Cursors.Hand
+                };
+                gradeButton.Click += GradeButton_Click;
+                buttonPanel.Children.Add(gradeButton);
+            }
 
             Grid.SetColumn(buttonPanel, 1);
             grid.Children.Add(buttonPanel);
@@ -225,91 +402,76 @@ namespace TaskManagementSystem
 
         private string GetStatusText(SubmissionModel submission)
         {
-            switch (submission.Status)
+            if (submission.Status == "Submitted")
+                return "📤 Отправлено на проверку";
+            else if (submission.Status == "Under Review")
+                return "👨‍🏫 Проверяется";
+            else if (submission.Status == "Completed")
             {
-                case "Submitted":
-                    return "📤 Отправлено на проверку";
-                case "Under Review":
-                    return "👨‍🏫 Проверяется";
-                case "Completed":
-                    return submission.Score.HasValue ? $"✅ Проверено | Оценка: {submission.Score}" : "✅ Проверено";
-                case "Rejected":
-                    return "❌ Отклонено";
-                case "Returned":
-                    return "🔴 Возвращено на доработку";
-                default:
-                    return submission.Status;
+                if (submission.Score.HasValue)
+                    return $"✅ Проверено | Оценка: {submission.Score}";
+                else
+                    return "✅ Проверено";
             }
+            else if (submission.Status == "Rejected")
+                return "❌ Отклонено";
+            else if (submission.Status == "Returned")
+                return "🔴 Возвращено на доработку";
+            else
+                return submission.Status;
         }
 
         private Brush GetStatusColor(string status)
         {
             var converter = new BrushConverter();
-            switch (status)
-            {
-                case "Submitted":
-                case "Under Review":
-                    return (Brush)converter.ConvertFromString("#f39c12");
-                case "Completed":
-                    return (Brush)converter.ConvertFromString("#27ae60");
-                case "Rejected":
-                case "Returned":
-                    return (Brush)converter.ConvertFromString("#e74c3c");
-                default:
-                    return (Brush)converter.ConvertFromString("#7f8c8d");
-            }
+            if (status == "Submitted" || status == "Under Review")
+                return (Brush)converter.ConvertFromString("#f39c12");
+            else if (status == "Completed")
+                return (Brush)converter.ConvertFromString("#27ae60");
+            else if (status == "Rejected" || status == "Returned")
+                return (Brush)converter.ConvertFromString("#e74c3c");
+            else
+                return (Brush)converter.ConvertFromString("#7f8c8d");
         }
 
         private List<SubmissionModel> FilterSubmissions()
         {
             var filtered = allSubmissions.AsEnumerable();
 
-            var selectedCourse = (CourseFilter.SelectedItem as ComboBoxItem)?.Content.ToString();
+            var selectedCourse = (CourseFilter.SelectedItem as ComboBoxItem)?.Content?.ToString();
             if (selectedCourse != "Все курсы" && !string.IsNullOrEmpty(selectedCourse))
             {
                 filtered = filtered.Where(s => s.CourseName == selectedCourse);
             }
 
-            var selectedStatus = (StatusFilter.SelectedItem as ComboBoxItem)?.Content.ToString();
+            var selectedStatus = (StatusFilter.SelectedItem as ComboBoxItem)?.Content?.ToString();
             if (selectedStatus != "Все статусы")
             {
-                switch (selectedStatus)
-                {
-                    case "На проверке":
-                        filtered = filtered.Where(s => s.Status == "Submitted" || s.Status == "Under Review");
-                        break;
-                    case "Проверено":
-                        filtered = filtered.Where(s => s.Status == "Completed");
-                        break;
-                    case "Возвращено":
-                        filtered = filtered.Where(s => s.Status == "Returned" || s.Status == "Rejected");
-                        break;
-                }
+                if (selectedStatus == "На проверке")
+                    filtered = filtered.Where(s => s.Status == "Submitted" || s.Status == "Under Review");
+                else if (selectedStatus == "Проверено")
+                    filtered = filtered.Where(s => s.Status == "Completed");
+                else if (selectedStatus == "Возвращено")
+                    filtered = filtered.Where(s => s.Status == "Returned" || s.Status == "Rejected");
             }
 
-            var selectedSort = (SortFilter.SelectedItem as ComboBoxItem)?.Content.ToString();
-            switch (selectedSort)
-            {
-                case "По дате (новые)":
-                    filtered = filtered.OrderByDescending(s => s.SubmittedDate);
-                    break;
-                case "По дате (старые)":
-                    filtered = filtered.OrderBy(s => s.SubmittedDate);
-                    break;
-                case "По курсу":
-                    filtered = filtered.OrderBy(s => s.CourseName);
-                    break;
-                case "По оценке":
-                    filtered = filtered.OrderByDescending(s => s.Score ?? 0);
-                    break;
-            }
+            var selectedSort = (SortFilter.SelectedItem as ComboBoxItem)?.Content?.ToString();
+            if (selectedSort == "По дате (новые)")
+                filtered = filtered.OrderByDescending(s => s.SubmittedDate);
+            else if (selectedSort == "По дате (старые)")
+                filtered = filtered.OrderBy(s => s.SubmittedDate);
+            else if (selectedSort == "По курсу")
+                filtered = filtered.OrderBy(s => s.CourseName);
+            else if (selectedSort == "По оценке")
+                filtered = filtered.OrderByDescending(s => s.Score ?? 0);
 
             return filtered.ToList();
         }
 
         private void Filter_Changed(object sender, SelectionChangedEventArgs e)
         {
-            GenerateSubmissionGroups();
+            if (isInitialized)
+                GenerateSubmissionGroups();
         }
 
         private void UpdateSubmissionsVisibility()
@@ -329,6 +491,16 @@ namespace TaskManagementSystem
             }
         }
 
+        private void GradeButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var submission = button?.Tag as SubmissionModel;
+            if (submission != null)
+            {
+                ShowGradeDialog(submission);
+            }
+        }
+
         private void ShowSubmissionDetails(SubmissionModel submission)
         {
             var files = _context.Files.Where(f => f.SubmissionId == submission.Id).ToList();
@@ -338,13 +510,29 @@ namespace TaskManagementSystem
                 : "Файлы не прикреплены";
 
             string message = $"Задание: {submission.TaskTitle}\n" +
-                           $"Курс: {submission.CourseName}\n" +
-                           $"Отправлено: {submission.SubmittedDate:dd.MM.yyyy HH:mm}\n" +
-                           $"Статус: {GetStatusText(submission)}\n" +
-                           $"Комментарий преподавателя: {submission.TeacherComment ?? "Отсутствует"}\n\n" +
-                           $"Прикрепленные файлы:\n{filesText}";
+                           $"Курс: {submission.CourseName}\n";
+
+            if (_currentUser.Role != "Student")
+            {
+                message += $"Студент: {submission.StudentName}\n";
+            }
+
+            message += $"Отправлено: {submission.SubmittedDate:dd.MM.yyyy HH:mm}\n" +
+                       $"Статус: {GetStatusText(submission)}\n" +
+                       $"Комментарий преподавателя: {submission.TeacherComment ?? "Отсутствует"}\n\n" +
+                       $"Описание задания: {submission.TaskDescription ?? "Отсутствует"}\n\n" +
+                       $"Прикрепленные файлы:\n{filesText}";
 
             MessageBox.Show(message, "Детали отправленной работы", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void ShowGradeDialog(SubmissionModel submission)
+        {
+            MessageBox.Show($"Оценивание работы:\n\n" +
+                          $"Задание: {submission.TaskTitle}\n" +
+                          $"Студент: {submission.StudentName}\n" +
+                          $"Курс: {submission.CourseName}\n\n" +
+                          "Эта функция в разработке.", "Оценивание работы");
         }
     }
 
@@ -360,5 +548,7 @@ namespace TaskManagementSystem
         public string TeacherComment { get; set; }
         public string TaskDescription { get; set; }
         public DateTime Deadline { get; set; }
+        public string StudentName { get; set; }
+        public int? StudentId { get; set; }
     }
 }
