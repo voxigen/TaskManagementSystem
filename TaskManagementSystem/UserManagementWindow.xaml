@@ -14,7 +14,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-      
         <Border Background="#2c3e50" Padding="20,15">
             <StackPanel>
                 <TextBlock Text="👥 Управление пользователями" 
@@ -26,7 +25,6 @@
             </StackPanel>
         </Border>
 
-     
         <Grid Grid.Row="1" Margin="20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -34,7 +32,6 @@
                 <ColumnDefinition Width="300"/>
             </Grid.ColumnDefinitions>
 
-            
             <Border Grid.Column="0" Background="White" 
                     BorderBrush="#bdc3c7" BorderThickness="1" 
                     Padding="15">
@@ -61,156 +58,148 @@
                 </StackPanel>
             </Border>
 
-           
             <Border Grid.Column="2" Background="White" 
                     BorderBrush="#bdc3c7" BorderThickness="1" 
                     Padding="15">
-
-                <StackPanel>
-                    
-                        
-                    
-                    <TextBlock Text="Добавить пользователя" 
-                              FontSize="16" FontWeight="SemiBold" 
-                              Foreground="#2c3e50" Margin="0,0,0,15"/>
-
-                   
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
-                        <TextBlock Text="Логин:" FontSize="12" 
-                                  Foreground="#2c3e50" Margin="0,0,0,5"/>
-                        <TextBox x:Name="NewLoginTextBox" 
-                                FontSize="14" 
-                                BorderBrush="#bdc3c7" 
-                                BorderThickness="1" 
-                                Padding="8" 
-                                Margin="0,0,0,10"/>
+                        <TextBlock Text="Добавить пользователя" 
+                                  FontSize="16" FontWeight="SemiBold" 
+                                  Foreground="#2c3e50" Margin="0,0,0,15"/>
 
-                        <TextBlock Text="Пароль:" FontSize="12" 
-                                  Foreground="#2c3e50" Margin="0,0,0,5"/>
-                        <PasswordBox x:Name="NewPasswordBox" 
+                        <StackPanel>
+                            <TextBlock Text="Логин:" FontSize="12" 
+                                      Foreground="#2c3e50" Margin="0,0,0,5"/>
+                            <TextBox x:Name="NewLoginTextBox" 
                                     FontSize="14" 
                                     BorderBrush="#bdc3c7" 
                                     BorderThickness="1" 
                                     Padding="8" 
                                     Margin="0,0,0,10"/>
 
-                        <TextBlock Text="ФИО:" FontSize="12" 
-                                  Foreground="#2c3e50" Margin="0,0,0,5"/>
-                        <TextBox x:Name="NewFullNameTextBox" 
+                            <TextBlock Text="Пароль:" FontSize="12" 
+                                      Foreground="#2c3e50" Margin="0,0,0,5"/>
+                            <PasswordBox x:Name="NewPasswordBox" 
+                                        FontSize="14" 
+                                        BorderBrush="#bdc3c7" 
+                                        BorderThickness="1" 
+                                        Padding="8" 
+                                        Margin="0,0,0,10"/>
+
+                            <TextBlock Text="ФИО:" FontSize="12" 
+                                      Foreground="#2c3e50" Margin="0,0,0,5"/>
+                            <TextBox x:Name="NewFullNameTextBox" 
+                                    FontSize="14" 
+                                    BorderBrush="#bdc3c7" 
+                                    BorderThickness="1" 
+                                    Padding="8" 
+                                    Margin="0,0,0,10"/>
+
+                            <TextBlock Text="Email:" FontSize="12" 
+                                      Foreground="#2c3e50" Margin="0,0,0,5"/>
+                            <TextBox x:Name="NewEmailTextBox" 
                                 FontSize="14" 
                                 BorderBrush="#bdc3c7" 
                                 BorderThickness="1" 
                                 Padding="8" 
                                 Margin="0,0,0,10"/>
 
-                        <TextBlock Text="Email:" FontSize="12" 
-                                  Foreground="#2c3e50" Margin="0,0,0,5"/>
-                        <TextBox x:Name="NewEmailTextBox" 
-                                FontSize="14" 
-                                BorderBrush="#bdc3c7" 
-                                BorderThickness="1" 
-                                Padding="8" 
-                                Margin="0,0,0,10"/>
-
-                        <TextBlock Text="Роль:" FontSize="12" 
-                                  Foreground="#2c3e50" Margin="0,0,0,5"/>
-                        <ComboBox x:Name="NewRoleComboBox" 
-                                 FontSize="14" 
-                                 BorderBrush="#bdc3c7" 
-                                 BorderThickness="1" 
-                                 Padding="8" 
-                                 Margin="0,0,0,15">
-                            <ComboBoxItem Content="Student" IsSelected="True"/>
-                            <ComboBoxItem Content="Teacher"/>
-                            <ComboBoxItem Content="Administrator"/>
-                        </ComboBox>
-
-                        
-                        <StackPanel x:Name="StudentFields" 
-                                   Margin="0,0,0,10">
-                            <TextBlock Text="Группа (для студента):" 
-                                      FontSize="12" 
+                            <TextBlock Text="Роль:" FontSize="12" 
                                       Foreground="#2c3e50" Margin="0,0,0,5"/>
-                            <TextBox x:Name="NewGroupTextBox" 
-                                    FontSize="14" 
-                                    BorderBrush="#bdc3c7" 
-                                    BorderThickness="1" 
-                                    Padding="8"/>
+                            <ComboBox x:Name="NewRoleComboBox" 
+                                     FontSize="14" 
+                                     BorderBrush="#bdc3c7" 
+                                     BorderThickness="1" 
+                                     Padding="8" 
+                                     Margin="0,0,0,15">
+                                <ComboBoxItem Content="Student" IsSelected="True"/>
+                                <ComboBoxItem Content="Teacher"/>
+                                <ComboBoxItem Content="Administrator"/>
+                            </ComboBox>
+
+                            <StackPanel x:Name="StudentFields" 
+                                       Margin="0,0,0,10">
+                                <TextBlock Text="Группа (для студента):" 
+                                          FontSize="12" 
+                                          Foreground="#2c3e50" Margin="0,0,0,5"/>
+                                <TextBox x:Name="NewGroupTextBox" 
+                                        FontSize="14" 
+                                        BorderBrush="#bdc3c7" 
+                                        BorderThickness="1" 
+                                        Padding="8"/>
+                            </StackPanel>
+
+                            <StackPanel x:Name="TeacherFields" 
+                                       Margin="0,0,0,10" 
+                                       Visibility="Collapsed">
+                                <TextBlock Text="Отделение (для преподавателя):" 
+                                          FontSize="12" 
+                                          Foreground="#2c3e50" Margin="0,0,0,5"/>
+                                <TextBox x:Name="NewDepartmentTextBox" 
+                                        FontSize="14" 
+                                        BorderBrush="#bdc3c7" 
+                                        BorderThickness="1" 
+                                        Padding="8"/>
+                            </StackPanel>
+
+                            <Button x:Name="AddUserButton" 
+                                   Content="Добавить пользователя" 
+                                   Background="#27ae60" 
+                                   Foreground="White" 
+                                   FontWeight="SemiBold" 
+                                   Height="40" 
+                                   BorderThickness="0" 
+                                   Margin="0,10,0,20"
+                                   Click="AddUserButton_Click">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#219652"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <Separator Background="#bdc3c7" Margin="0,0,0,20"/>
+
+                            <TextBlock Text="Удалить пользователя" 
+                                      FontSize="16" FontWeight="SemiBold" 
+                                      Foreground="#2c3e50" Margin="0,0,0,15"/>
+
+                            <TextBlock Text="Выберите пользователя в списке слева, затем нажмите кнопку ниже для удаления" 
+                                      FontSize="11" 
+                                      Foreground="#7f8c8d" 
+                                      TextWrapping="Wrap"
+                                      Margin="0,0,0,10"/>
+
+                            <Button x:Name="DeleteUserButton" 
+                                   Content="Удалить выбранного пользователя" 
+                                   Background="#e74c3c" 
+                                   Foreground="White" 
+                                   FontWeight="SemiBold" 
+                                   Height="40" 
+                                   BorderThickness="0"
+                                   Click="DeleteUserButton_Click">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#c0392b"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                         </StackPanel>
-
-                        <StackPanel x:Name="TeacherFields" 
-                                   Margin="0,0,0,10" 
-                                   Visibility="Collapsed">
-                            <TextBlock Text="Отделение (для преподавателя):" 
-                                      FontSize="12" 
-                                      Foreground="#2c3e50" Margin="0,0,0,5"/>
-                            <TextBox x:Name="NewDepartmentTextBox" 
-                                    FontSize="14" 
-                                    BorderBrush="#bdc3c7" 
-                                    BorderThickness="1" 
-                                    Padding="8"/>
-                        </StackPanel>
-
-                        <Button x:Name="AddUserButton" 
-                               Content="Добавить пользователя" 
-                               Background="#27ae60" 
-                               Foreground="White" 
-                               FontWeight="SemiBold" 
-                               Height="40" 
-                               BorderThickness="0" 
-                               Margin="0,10,0,20"
-                               Click="AddUserButton_Click">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#219652"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-
-                        <Separator Background="#bdc3c7" Margin="0,0,0,20"/>
-
-                      
-                        <TextBlock Text="Удалить пользователя" 
-                                  FontSize="16" FontWeight="SemiBold" 
-                                  Foreground="#2c3e50" Margin="0,0,0,15"/>
-
-                        <TextBlock Text="Выберите пользователя в списке слева, затем нажмите кнопку ниже для удаления" 
-                                  FontSize="11" 
-                                  Foreground="#7f8c8d" 
-                                  TextWrapping="Wrap"
-                                  Margin="0,0,0,10"/>
-
-                        <Button x:Name="DeleteUserButton" 
-                               Content="Удалить выбранного пользователя" 
-                               Background="#e74c3c" 
-                               Foreground="White" 
-                               FontWeight="SemiBold" 
-                               Height="40" 
-                               BorderThickness="0"
-                               Click="DeleteUserButton_Click">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#c0392b"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
                     </StackPanel>
-                </StackPanel>
+                </ScrollViewer>
             </Border>
         </Grid>
 
-      
         <Border Grid.Row="2" Background="#ecf0f1" Padding="15,10">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-               
                 <Button x:Name="CloseButton" 
                        Content="Закрыть" 
                        Background="#3498db" 

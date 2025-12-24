@@ -14,19 +14,110 @@ namespace TaskManagementSystem
         private Users _currentUser;
         private List<TaskModel> allTasks;
         private bool isInitialized = false;
+        private List<string> availableCourses = new List<string>();
 
         public TasksView(Users user)
         {
             InitializeComponent();
             _context = new TaskManagementSystemEntities3();
             _currentUser = user;
-            LoadTasks();
 
-            this.Loaded += (s, e) =>
+            Loaded += (s, e) =>
             {
                 isInitialized = true;
+                LoadCoursesForFilter();
+                LoadTasks();
                 GenerateTaskGroups();
             };
+        }
+
+        private void LoadCoursesForFilter()
+        {
+            if (!isInitialized) return;
+
+            CourseFilter.Items.Clear();
+            CourseFilter.Items.Add(new ComboBoxItem { Content = "Все курсы" });
+
+            switch (_currentUser.Role)
+            {
+                case "Student":
+                    LoadStudentCourses();
+                    break;
+                case "Teacher":
+                    LoadTeacherCourses();
+                    break;
+                case "Administrator":
+                    LoadAllCourses();
+                    break;
+            }
+
+            availableCourses = CourseFilter.Items
+                .Cast<ComboBoxItem>()
+                .Skip(1)
+                .Select(item => item.Content.ToString())
+                .ToList();
+        }
+
+        private void LoadStudentCourses()
+        {
+            var student = _context.Students.FirstOrDefault(s => s.UserId == _currentUser.Id);
+            if (student == null) return;
+
+            var studentId = student.UserId;
+
+            var studentCourseIds = _context.Database.SqlQuery<int>(
+                "SELECT CourseId FROM CourseStudents WHERE StudentUserId = {0}",
+                studentId).ToList();
+
+            var studentCourses = _context.Courses
+                .Where(c => studentCourseIds.Contains(c.Id))
+                .Select(c => c.Title)
+                .Distinct()
+                .OrderBy(title => title)
+                .ToList();
+
+            foreach (var course in studentCourses)
+            {
+                CourseFilter.Items.Add(new ComboBoxItem { Content = course });
+            }
+        }
+
+        private void LoadTeacherCourses()
+        {
+            var teacher = _context.Teachers.FirstOrDefault(t => t.UserId == _currentUser.Id);
+            if (teacher == null) return;
+
+            var teacherId = teacher.UserId;
+
+            var teacherCourseIds = _context.Database.SqlQuery<int>(
+                "SELECT CourseId FROM CourseTeachers WHERE TeacherUserId = {0}",
+                teacherId).ToList();
+
+            var teacherCourses = _context.Courses
+                .Where(c => teacherCourseIds.Contains(c.Id))
+                .Select(c => c.Title)
+                .Distinct()
+                .OrderBy(title => title)
+                .ToList();
+
+            foreach (var course in teacherCourses)
+            {
+                CourseFilter.Items.Add(new ComboBoxItem { Content = course });
+            }
+        }
+
+        private void LoadAllCourses()
+        {
+            var allCourses = _context.Courses
+                .Select(c => c.Title)
+                .Distinct()
+                .OrderBy(title => title)
+                .ToList();
+
+            foreach (var course in allCourses)
+            {
+                CourseFilter.Items.Add(new ComboBoxItem { Content = course });
+            }
         }
 
         private void LoadTasks()
@@ -44,9 +135,6 @@ namespace TaskManagementSystem
                 case "Administrator":
                     LoadAllTasks();
                     break;
-                default:
-                    LoadSampleTasks(); 
-                    break;
             }
         }
 
@@ -57,12 +145,10 @@ namespace TaskManagementSystem
 
             var studentId = student.UserId;
 
-         
             var studentCourseIds = _context.Database.SqlQuery<int>(
                 "SELECT CourseId FROM CourseStudents WHERE StudentUserId = {0}",
                 studentId).ToList();
 
-          
             var tasks = _context.Tasks
                 .Where(t => studentCourseIds.Contains(t.CourseId))
                 .ToList();
@@ -88,12 +174,12 @@ namespace TaskManagementSystem
                     StatusText = GetStatusText(status, daysLeft, submission, task),
                     DaysLeft = daysLeft,
                     CanSubmit = status == TaskStatus.Active || status == TaskStatus.Overdue,
-                    CanReview = submission != null &&
-                               (submission.Status == "Completed" || submission.Status == "Returned"),
+                    CanReview = submission != null,
                     SubmittedDate = submission?.SubmittedAt,
                     Grade = submission?.Score,
                     MaxScore = task.MaxScore,
-                    SubmissionId = submission?.Id
+                    SubmissionId = submission?.Id,
+                    SubmissionStatus = submission?.Status
                 });
             }
         }
@@ -181,10 +267,7 @@ namespace TaskManagementSystem
         {
             if (submission != null)
             {
-                if (submission.Status == "Completed" || submission.Status == "Returned")
-                    return TaskStatus.Completed;
-                else
-                    return TaskStatus.Active;
+                return TaskStatus.Submitted;
             }
 
             return daysLeft < 0 ? TaskStatus.Overdue : TaskStatus.Active;
@@ -194,13 +277,27 @@ namespace TaskManagementSystem
         {
             switch (status)
             {
-                case TaskStatus.Completed:
+                case TaskStatus.Submitted:
                     if (submission?.Score != null)
                     {
                         return $"✅ Проверено | Оценка: {submission.Score}" +
                                (task.MaxScore.HasValue ? $"/{task.MaxScore}" : "");
                     }
-                    return "✅ Проверено";
+
+                    switch (submission?.Status)
+                    {
+                        case "Submitted":
+                            return "📤 Отправлено на проверку";
+                        case "Under Review":
+                            return "👨‍🏫 Проверяется";
+                        case "Returned":
+                            return "🔴 Возвращено на доработку";
+                        case "Completed":
+                            return $"✅ Проверено | Оценка: {submission.Score}" +
+                                   (task.MaxScore.HasValue ? $"/{task.MaxScore}" : "");
+                        default:
+                            return "📤 Отправлено";
+                    }
                 case TaskStatus.Overdue:
                     return $"🔴 Просрочено на {-daysLeft} дней";
                 case TaskStatus.Active:
@@ -225,7 +322,7 @@ namespace TaskManagementSystem
 
                 var overdueTasks = filteredTasks.Where(t => t.Status == TaskStatus.Overdue).ToList();
                 var activeTasks = filteredTasks.Where(t => t.Status == TaskStatus.Active).ToList();
-                var completedTasks = filteredTasks.Where(t => t.Status == TaskStatus.Completed).ToList();
+                var submittedTasks = filteredTasks.Where(t => t.Status == TaskStatus.Submitted).ToList();
 
                 if (overdueTasks.Any())
                     AddTaskGroup("🔴 ПРОСРОЧЕНО", overdueTasks, "#ffebee");
@@ -233,8 +330,8 @@ namespace TaskManagementSystem
                 if (activeTasks.Any())
                     AddTaskGroup("🟡 АКТИВНЫЕ", activeTasks, "#fff8e1");
 
-                if (completedTasks.Any())
-                    AddTaskGroup("✅ ВЫПОЛНЕННЫЕ", completedTasks, "#e8f5e8");
+                if (submittedTasks.Any())
+                    AddTaskGroup("📤 ОТПРАВЛЕННЫЕ", submittedTasks, "#e8f5e8");
 
                 UpdateTasksVisibility();
             }
@@ -372,7 +469,6 @@ namespace TaskManagementSystem
                 HorizontalAlignment = HorizontalAlignment.Right
             };
 
-           
             if (task.CanSubmit && _currentUser.Role == "Student")
             {
                 var submitButton = new Button
@@ -409,11 +505,9 @@ namespace TaskManagementSystem
                 buttonPanel.Children.Add(reviewButton);
             }
 
-            
             if ((_currentUser.Role == "Teacher" && task.TeacherId == _currentUser.Id) ||
                 _currentUser.Role == "Administrator")
             {
-                
                 var editButton = new Button
                 {
                     Content = "✏️ Редактировать",
@@ -429,7 +523,6 @@ namespace TaskManagementSystem
                 editButton.Click += EditTask_Click;
                 buttonPanel.Children.Add(editButton);
 
-                
                 var deleteButton = new Button
                 {
                     Content = "🗑️ Удалить",
@@ -446,7 +539,6 @@ namespace TaskManagementSystem
                 buttonPanel.Children.Add(deleteButton);
             }
 
-           
             if (task.IsTeacherTask && task.SubmissionCount > 0 && _currentUser.Role == "Teacher")
             {
                 var gradeButton = new Button
@@ -507,31 +599,25 @@ namespace TaskManagementSystem
                 {
                     try
                     {
-                       
                         string deleteNotificationsQuery = "DELETE FROM Notifications WHERE RelatedTaskId = {0}";
                         _context.Database.ExecuteSqlCommand(deleteNotificationsQuery, task.Id);
 
-                        
                         var submissionIds = _context.Database.SqlQuery<int>(
                             "SELECT Id FROM Submissions WHERE TaskId = {0}",
                             task.Id).ToList();
 
-                       
                         foreach (var submissionId in submissionIds)
                         {
                             string deleteFilesQuery = "DELETE FROM Files WHERE SubmissionId = {0}";
                             _context.Database.ExecuteSqlCommand(deleteFilesQuery, submissionId);
                         }
 
-                        
                         string deleteTaskFilesQuery = "DELETE FROM Files WHERE TaskId = {0} AND SubmissionId IS NULL";
                         _context.Database.ExecuteSqlCommand(deleteTaskFilesQuery, task.Id);
 
-                       
                         string deleteSubmissionsQuery = "DELETE FROM Submissions WHERE TaskId = {0}";
                         _context.Database.ExecuteSqlCommand(deleteSubmissionsQuery, task.Id);
 
-                       
                         string deleteTaskQuery = "DELETE FROM Tasks WHERE Id = {0}";
                         _context.Database.ExecuteSqlCommand(deleteTaskQuery, task.Id);
 
@@ -559,8 +645,8 @@ namespace TaskManagementSystem
                     return (Brush)converter.ConvertFromString("#e74c3c");
                 case TaskStatus.Active:
                     return (Brush)converter.ConvertFromString("#f39c12");
-                case TaskStatus.Completed:
-                    return (Brush)converter.ConvertFromString("#27ae60");
+                case TaskStatus.Submitted:
+                    return (Brush)converter.ConvertFromString("#3498db");
                 default:
                     return (Brush)converter.ConvertFromString("#7f8c8d");
             }
@@ -568,8 +654,8 @@ namespace TaskManagementSystem
 
         private List<TaskModel> FilterTasks()
         {
-            if (ActiveTasksFilter == null || OverdueTasksFilter == null || CourseFilter == null)
-                return allTasks;
+            if (!isInitialized || allTasks == null)
+                return new List<TaskModel>();
 
             var filtered = allTasks.AsEnumerable();
 
@@ -578,42 +664,57 @@ namespace TaskManagementSystem
             else if (OverdueTasksFilter.IsChecked == true)
                 filtered = filtered.Where(t => t.Status == TaskStatus.Overdue);
 
-            var selectedCourse = (CourseFilter.SelectedItem as ComboBoxItem)?.Content?.ToString();
-            if (selectedCourse != "Все курсы" && !string.IsNullOrEmpty(selectedCourse))
-                filtered = filtered.Where(t => t.Course == selectedCourse);
-
-            var selectedStatus = (StatusFilter.SelectedItem as ComboBoxItem)?.Content?.ToString();
-            if (selectedStatus != "Все статусы")
+            var selectedCourseItem = CourseFilter.SelectedItem as ComboBoxItem;
+            if (selectedCourseItem != null)
             {
-                switch (selectedStatus)
+                var selectedCourse = selectedCourseItem.Content?.ToString();
+                if (selectedCourse != "Все курсы" && !string.IsNullOrEmpty(selectedCourse))
                 {
-                    case "На проверке":
-                        filtered = filtered.Where(t => t.Status == TaskStatus.Active && !t.IsTeacherTask);
-                        break;
-                    case "Проверено":
-                        filtered = filtered.Where(t => t.Status == TaskStatus.Completed);
-                        break;
-                    case "Не сдано":
-                        filtered = filtered.Where(t => t.Status == TaskStatus.Overdue);
-                        break;
+                    filtered = filtered.Where(t => t.Course == selectedCourse);
                 }
             }
 
-            var selectedSort = (SortFilter.SelectedItem as ComboBoxItem)?.Content?.ToString();
-            switch (selectedSort)
+            var selectedStatusItem = StatusFilter.SelectedItem as ComboBoxItem;
+            if (selectedStatusItem != null)
             {
-                case "По дате (новые)":
-                    filtered = filtered.OrderByDescending(t => t.DueDate);
-                    break;
-                case "По дате (старые)":
-                    filtered = filtered.OrderBy(t => t.DueDate);
-                    break;
-                case "По курсу":
-                    filtered = filtered.OrderBy(t => t.Course);
-                    break;
-                case "По статусу":
-                    filtered = filtered.OrderBy(t => t.Status);
-                    break;
+                var selectedStatus = selectedStatusItem.Content?.ToString();
+                if (selectedStatus != "Все статусы")
+                {
+                    switch (selectedStatus)
+                    {
+                        case "На проверке":
+                            filtered = filtered.Where(t => t.Status == TaskStatus.Active && !t.IsTeacherTask);
+                            break;
+                        case "Проверено":
+                            filtered = filtered.Where(t => t.Status == TaskStatus.Submitted &&
+                                (t.SubmissionStatus == "Completed" || t.SubmissionStatus == "Returned"));
+                            break;
+                        case "Не сдано":
+                            filtered = filtered.Where(t => t.Status == TaskStatus.Overdue);
+                            break;
+                    }
+                }
+            }
+
+            var selectedSortItem = SortFilter.SelectedItem as ComboBoxItem;
+            if (selectedSortItem != null)
+            {
+                var selectedSort = selectedSortItem.Content?.ToString();
+                switch (selectedSort)
+                {
+                    case "По дате (новые)":
+                        filtered = filtered.OrderByDescending(t => t.DueDate);
+                        break;
+                    case "По дате (старые)":
+                        filtered = filtered.OrderBy(t => t.DueDate);
+                        break;
+                    case "По курсу":
+                        filtered = filtered.OrderBy(t => t.Course);
+                        break;
+                    case "По статусу":
+                        filtered = filtered.OrderBy(t => t.Status);
+                        break;
+                }
             }
 
             return filtered.ToList();
@@ -690,47 +791,6 @@ namespace TaskManagementSystem
                 }
             }
         }
-
-        private void LoadSampleTasks()
-        {
-       
-            allTasks = new List<TaskModel>
-            {
-                new TaskModel
-                {
-                    Id = 1,
-                    Title = "Лаб.работа #1",
-                    Course = "МДК 01.03",
-                    DueDate = new DateTime(2024, 5, 1),
-                    Status = TaskStatus.Overdue,
-                    StatusText = "Просрочено на 5 дней",
-                    DaysLeft = -5,
-                    CanSubmit = true
-                },
-                new TaskModel
-                {
-                    Id = 2,
-                    Title = "Тест #2",
-                    Course = "ОП.05 БД",
-                    DueDate = new DateTime(2024, 5, 10),
-                    Status = TaskStatus.Overdue,
-                    StatusText = "Просрочено на 2 дня",
-                    DaysLeft = -2,
-                    CanSubmit = true
-                },
-                new TaskModel
-                {
-                    Id = 3,
-                    Title = "Проект БД",
-                    Course = "ОП.05 БД",
-                    DueDate = DateTime.Now.AddDays(3),
-                    Status = TaskStatus.Active,
-                    StatusText = "Осталось 3 дня",
-                    DaysLeft = 3,
-                    CanSubmit = true
-                }
-            };
-        }
     }
 
     public class TaskModel
@@ -756,12 +816,13 @@ namespace TaskManagementSystem
         public bool IsAdminView { get; set; }
         public int? TeacherId { get; set; }
         public int CourseId { get; set; }
+        public string SubmissionStatus { get; set; }
     }
 
     public enum TaskStatus
     {
         Overdue,
         Active,
-        Completed
+        Submitted
     }
 }

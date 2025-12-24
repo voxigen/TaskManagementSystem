@@ -93,18 +93,7 @@
 
                  
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <TextBox x:Name="SearchBox" Text="Поиск..." Width="200" Height="32" Padding="8,4" BorderBrush="#bdc3c7" BorderThickness="1" Margin="0,0,12,0">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsFocused" Value="True">
-                                            <Setter Property="BorderBrush" Value="#3498db"/>
-                                            <Setter Property="Text" Value=""/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
+                        
 
                         <Button x:Name="NotificationsButton" Background="Transparent" BorderThickness="0" Padding="8" Cursor="Hand" ToolTip="Уведомления" Click="NotificationsButton_Click">
                             <StackPanel Orientation="Horizontal">

@@ -156,7 +156,9 @@ namespace TaskManagementSystem
                 return;
             }
 
-            ShowSimplePage("Отчеты", "Аналитика и отчетность");
+            var reportsWindow = new ReportsWindow(_currentUser);
+            reportsWindow.Owner = this;
+            reportsWindow.ShowDialog();
         }
 
         private void TaskCreate_Checked(object sender, RoutedEventArgs e)
@@ -206,7 +208,14 @@ namespace TaskManagementSystem
                 return;
             }
 
-            ShowSimplePage("Настройки системы", "Системные настройки и конфигурация");
+            if (MainContainer != null)
+                MainContainer.Navigate(new SystemSettingsPage());
+
+            if (PageTitle != null)
+                PageTitle.Text = "Настройки системы";
+
+            if (PageSubtitle != null)
+                PageSubtitle.Text = "Управление системой и резервное копирование";
         }
 
         private void ShowSimplePage(string title, string subtitle)

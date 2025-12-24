@@ -38,43 +38,18 @@
 
                             <StackPanel Margin="0,0,0,25">
                                 <TextBlock Text="Пароль" FontSize="12" Foreground="#7f8c8d" Margin="0,0,0,5"/>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <PasswordBox x:Name="PasswordBox" Grid.Column="0" FontSize="14" BorderBrush="#bdc3c7" BorderThickness="1" Padding="8">
-                                        <PasswordBox.Style>
-                                            <Style TargetType="PasswordBox">
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsFocused" Value="True">
-                                                        <Setter Property="BorderBrush" Value="#3498db"/>
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </PasswordBox.Style>
-                                    </PasswordBox>
-                                  
-                                    <Button x:Name="ManageUsersButton" Grid.Column="1" Content="👥" 
-                                            Background="#667eea" Foreground="White" 
-                                            FontSize="14" Width="32" Height="32" Margin="8,0,0,0"
-                                            BorderThickness="0" Cursor="Hand" 
-                                            Click="ManageUsersButton_Click"
-                                            ToolTip="Управление пользователями (тест)">
-                                        <Button.Style>
-                                            <Style TargetType="Button">
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#5a6fd8"/>
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
-                                </Grid>
+                                <PasswordBox x:Name="PasswordBox" FontSize="14" BorderBrush="#bdc3c7" BorderThickness="1" Padding="8">
+                                    <PasswordBox.Style>
+                                        <Style TargetType="PasswordBox">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsFocused" Value="True">
+                                                    <Setter Property="BorderBrush" Value="#3498db"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </PasswordBox.Style>
+                                </PasswordBox>
                             </StackPanel>
-
-                            <CheckBox x:Name="RememberMeCheckBox" Content="Запомнить меня" IsChecked="True" Foreground="#2c3e50" Margin="0,0,0,25"/>
 
                             <Button x:Name="LoginButton" Content="ВОЙТИ В СИСТЕМУ" Background="#667eea" Foreground="White" FontWeight="SemiBold" Height="45" FontSize="14" BorderThickness="0" Cursor="Hand" Click="LoginButton_Click">
                                 <Button.Style>

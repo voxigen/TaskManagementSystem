@@ -233,7 +233,6 @@ namespace TaskManagementSystem
         }
     }
 
-    // Классы данных для фасада
     public class DashboardData
     {
         public string WelcomeMessage { get; set; }

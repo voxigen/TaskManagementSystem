@@ -32,19 +32,11 @@ namespace TaskManagementSystem
                 "Восстановление пароля", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void ManageUsersButton_Click(object sender, RoutedEventArgs e)
-        {
-            var userManagementWindow = new UserManagementWindow();
-            userManagementWindow.Owner = this;
-            userManagementWindow.ShowDialog();
-        }
-
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string login = LoginTextBox.Text.Trim();
             string password = PasswordBox.Password;
 
-            
             if (string.IsNullOrWhiteSpace(login))
             {
                 MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -59,7 +51,6 @@ namespace TaskManagementSystem
                 return;
             }
 
-           
             if (PasswordHasher.IsSimplePassword(password))
             {
                 MessageBox.Show("Пароль слишком простой. Используйте более сложный пароль.",
@@ -68,15 +59,12 @@ namespace TaskManagementSystem
 
             try
             {
-                
                 var user = _context.Users.FirstOrDefault(u => u.Login == login);
 
                 if (user != null)
                 {
-                 
                     if (PasswordHasher.VerifyPassword(password, user.PasswordHash))
                     {
-                      
                         MainWindow mainWindow = new MainWindow(user);
                         mainWindow.Show();
                         this.Close();
