@@ -105,7 +105,6 @@ namespace TaskManagementSystem
 
             var teacherId = teacher.UserId;
 
-           
             var tasks = _context.Tasks
                 .Where(t => t.TeacherUserId == teacherId)
                 .ToList();
@@ -131,20 +130,20 @@ namespace TaskManagementSystem
                     Status = status,
                     StatusText = $"📨 {submissionCount} отправок | ✅ {reviewedCount} проверено",
                     DaysLeft = daysLeft,
-                    CanSubmit = false, 
+                    CanSubmit = false,
                     CanReview = submissionCount > 0,
                     SubmissionCount = submissionCount,
                     ReviewedCount = reviewedCount,
                     MaxScore = task.MaxScore,
                     IsTeacherTask = true,
-                    TeacherId = teacherId
+                    TeacherId = teacherId,
+                    CourseId = task.CourseId
                 });
             }
         }
 
         private void LoadAllTasks()
         {
-        
             var tasks = _context.Tasks.ToList();
 
             foreach (var task in tasks)
@@ -171,7 +170,9 @@ namespace TaskManagementSystem
                     CanReview = false,
                     IsAdminView = true,
                     TeacherName = teacher?.FullName,
-                    SubmissionCount = submissionCount
+                    SubmissionCount = submissionCount,
+                    TeacherId = task.TeacherUserId,
+                    CourseId = task.CourseId
                 });
             }
         }
@@ -366,10 +367,12 @@ namespace TaskManagementSystem
 
             var buttonPanel = new StackPanel
             {
-                Orientation = Orientation.Horizontal,
-                VerticalAlignment = VerticalAlignment.Center
+                Orientation = Orientation.Vertical,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Right
             };
 
+           
             if (task.CanSubmit && _currentUser.Role == "Student")
             {
                 var submitButton = new Button
@@ -379,9 +382,10 @@ namespace TaskManagementSystem
                     Foreground = Brushes.White,
                     FontWeight = FontWeights.SemiBold,
                     BorderThickness = new Thickness(0),
-                    Margin = new Thickness(8, 0, 0, 0),
+                    Margin = new Thickness(0, 0, 0, 5),
                     Tag = task,
-                    Cursor = System.Windows.Input.Cursors.Hand
+                    Cursor = System.Windows.Input.Cursors.Hand,
+                    Width = 120
                 };
                 submitButton.Click += SubmitWork_Click;
                 buttonPanel.Children.Add(submitButton);
@@ -396,26 +400,66 @@ namespace TaskManagementSystem
                     Foreground = Brushes.White,
                     FontWeight = FontWeights.SemiBold,
                     BorderThickness = new Thickness(0),
-                    Margin = new Thickness(8, 0, 0, 0),
+                    Margin = new Thickness(0, 0, 0, 5),
                     Tag = task,
-                    Cursor = System.Windows.Input.Cursors.Hand
+                    Cursor = System.Windows.Input.Cursors.Hand,
+                    Width = 120
                 };
                 reviewButton.Click += ReviewWork_Click;
                 buttonPanel.Children.Add(reviewButton);
             }
 
-            if (task.IsTeacherTask && task.SubmissionCount > 0 && _currentUser.Role == "Teacher")
+            
+            if ((_currentUser.Role == "Teacher" && task.TeacherId == _currentUser.Id) ||
+                _currentUser.Role == "Administrator")
             {
-                var gradeButton = new Button
+                
+                var editButton = new Button
                 {
-                    Content = "Проверить",
+                    Content = "✏️ Редактировать",
+                    Background = (Brush)new BrushConverter().ConvertFrom("#f39c12"),
+                    Foreground = Brushes.White,
+                    FontWeight = FontWeights.SemiBold,
+                    BorderThickness = new Thickness(0),
+                    Margin = new Thickness(0, 0, 0, 5),
+                    Tag = task,
+                    Cursor = System.Windows.Input.Cursors.Hand,
+                    Width = 120
+                };
+                editButton.Click += EditTask_Click;
+                buttonPanel.Children.Add(editButton);
+
+                
+                var deleteButton = new Button
+                {
+                    Content = "🗑️ Удалить",
                     Background = (Brush)new BrushConverter().ConvertFrom("#e74c3c"),
                     Foreground = Brushes.White,
                     FontWeight = FontWeights.SemiBold,
                     BorderThickness = new Thickness(0),
-                    Margin = new Thickness(8, 0, 0, 0),
+                    Margin = new Thickness(0, 0, 0, 5),
                     Tag = task,
-                    Cursor = System.Windows.Input.Cursors.Hand
+                    Cursor = System.Windows.Input.Cursors.Hand,
+                    Width = 120
+                };
+                deleteButton.Click += DeleteTask_Click;
+                buttonPanel.Children.Add(deleteButton);
+            }
+
+           
+            if (task.IsTeacherTask && task.SubmissionCount > 0 && _currentUser.Role == "Teacher")
+            {
+                var gradeButton = new Button
+                {
+                    Content = "👁 Проверить",
+                    Background = (Brush)new BrushConverter().ConvertFrom("#9b59b6"),
+                    Foreground = Brushes.White,
+                    FontWeight = FontWeights.SemiBold,
+                    BorderThickness = new Thickness(0),
+                    Margin = new Thickness(0, 0, 0, 5),
+                    Tag = task,
+                    Cursor = System.Windows.Input.Cursors.Hand,
+                    Width = 120
                 };
                 gradeButton.Click += GradeWork_Click;
                 buttonPanel.Children.Add(gradeButton);
@@ -426,6 +470,84 @@ namespace TaskManagementSystem
 
             card.Child = grid;
             return card;
+        }
+
+        private void EditTask_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var task = button?.Tag as TaskModel;
+            if (task != null)
+            {
+                var dbTask = _context.Tasks.FirstOrDefault(t => t.Id == task.Id);
+                if (dbTask != null)
+                {
+                    var editWindow = new TaskEditWindow(dbTask);
+                    if (editWindow.ShowDialog() == true)
+                    {
+                        LoadTasks();
+                        GenerateTaskGroups();
+                    }
+                }
+            }
+        }
+
+        private void DeleteTask_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var task = button?.Tag as TaskModel;
+            if (task != null)
+            {
+                var result = MessageBox.Show($"Вы уверены, что хотите удалить задание?\n\n" +
+                                           $"Название: {task.Title}\n" +
+                                           $"Курс: {task.Course}\n\n" +
+                                           "Это действие удалит все связанные данные (файлы, отправки, уведомления)!",
+                        "Подтверждение удаления", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                       
+                        string deleteNotificationsQuery = "DELETE FROM Notifications WHERE RelatedTaskId = {0}";
+                        _context.Database.ExecuteSqlCommand(deleteNotificationsQuery, task.Id);
+
+                        
+                        var submissionIds = _context.Database.SqlQuery<int>(
+                            "SELECT Id FROM Submissions WHERE TaskId = {0}",
+                            task.Id).ToList();
+
+                       
+                        foreach (var submissionId in submissionIds)
+                        {
+                            string deleteFilesQuery = "DELETE FROM Files WHERE SubmissionId = {0}";
+                            _context.Database.ExecuteSqlCommand(deleteFilesQuery, submissionId);
+                        }
+
+                        
+                        string deleteTaskFilesQuery = "DELETE FROM Files WHERE TaskId = {0} AND SubmissionId IS NULL";
+                        _context.Database.ExecuteSqlCommand(deleteTaskFilesQuery, task.Id);
+
+                       
+                        string deleteSubmissionsQuery = "DELETE FROM Submissions WHERE TaskId = {0}";
+                        _context.Database.ExecuteSqlCommand(deleteSubmissionsQuery, task.Id);
+
+                       
+                        string deleteTaskQuery = "DELETE FROM Tasks WHERE Id = {0}";
+                        _context.Database.ExecuteSqlCommand(deleteTaskQuery, task.Id);
+
+                        MessageBox.Show($"Задание '{task.Title}' успешно удалено!",
+                            "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        LoadTasks();
+                        GenerateTaskGroups();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Ошибка при удалении задания: {ex.Message}",
+                            "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
         }
 
         private Brush GetStatusColor(TaskStatus status)
@@ -516,7 +638,16 @@ namespace TaskManagementSystem
             var task = button?.Tag as TaskModel;
             if (task != null)
             {
-                MessageBox.Show($"Сдача работы: {task.Title}\nКурс: {task.Course}\n\nЭта функция в разработке.", "Сдача работы");
+                var dbTask = _context.Tasks.FirstOrDefault(t => t.Id == task.Id);
+                if (dbTask != null)
+                {
+                    var submitWindow = new StudentSubmitWindow(_currentUser, dbTask);
+                    if (submitWindow.ShowDialog() == true)
+                    {
+                        LoadTasks();
+                        GenerateTaskGroups();
+                    }
+                }
             }
         }
 
@@ -547,10 +678,16 @@ namespace TaskManagementSystem
             var task = button?.Tag as TaskModel;
             if (task != null)
             {
-                MessageBox.Show($"Проверка работ по заданию: {task.Title}\n" +
-                              $"Курс: {task.Course}\n" +
-                              $"Отправок на проверку: {task.SubmissionCount}\n\n" +
-                              "Эта функция в разработке.", "Проверка работ");
+                var dbTask = _context.Tasks.FirstOrDefault(t => t.Id == task.Id);
+                if (dbTask != null)
+                {
+                    var reviewWindow = new TeacherReviewWindow(_currentUser, dbTask);
+                    reviewWindow.Owner = Window.GetWindow(this);
+                    reviewWindow.ShowDialog();
+
+                    LoadTasks();
+                    GenerateTaskGroups();
+                }
             }
         }
 
@@ -618,6 +755,7 @@ namespace TaskManagementSystem
         public bool IsTeacherTask { get; set; }
         public bool IsAdminView { get; set; }
         public int? TeacherId { get; set; }
+        public int CourseId { get; set; }
     }
 
     public enum TaskStatus

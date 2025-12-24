@@ -94,6 +94,7 @@
     <Compile Include="Dashboard.xaml.cs">
       <DependentUpon>Dashboard.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DashboardFacade.cs" />
     <Compile Include="Feedback.cs">
       <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
@@ -125,6 +126,9 @@
     <Compile Include="Students.cs">
       <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
+    <Compile Include="StudentSubmitWindow.xaml.cs">
+      <DependentUpon>StudentSubmitWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Submissions.cs">
       <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
@@ -137,11 +141,17 @@
     <Compile Include="TaskCreateWindow.xaml.cs">
       <DependentUpon>TaskCreateWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TaskEditWindow.xaml.cs">
+      <DependentUpon>TaskEditWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Tasks.cs">
       <DependentUpon>Model12.tt</DependentUpon>
     </Compile>
     <Compile Include="TasksView.xaml.cs">
       <DependentUpon>TasksView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TeacherReviewWindow.xaml.cs">
+      <DependentUpon>TeacherReviewWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Teachers.cs">
       <DependentUpon>Model12.tt</DependentUpon>
@@ -192,6 +202,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="StudentSubmitWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SubmissionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -200,7 +214,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="TaskEditWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="TasksView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TeacherReviewWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

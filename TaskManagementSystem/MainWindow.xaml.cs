@@ -321,7 +321,7 @@ namespace TaskManagementSystem
                 };
                 btnSubmitWork.Click += (s, args) =>
                 {
-                    MessageBox.Show("Выберите задание в разделе 'Задания' для сдачи работы", "Сдача работы");
+                    Tasks_Checked(s, e);
                     actions.Close();
                 };
 
@@ -384,7 +384,7 @@ namespace TaskManagementSystem
                 };
                 btnCheckWorks.Click += (s, args) =>
                 {
-                    Submissions_Checked(s, e);
+                    Tasks_Checked(s, e);
                     actions.Close();
                 };
 
@@ -399,7 +399,7 @@ namespace TaskManagementSystem
                 };
                 btnGenerateReport.Click += (s, args) =>
                 {
-                    MessageBox.Show("Функция создания отчетов в разработке", "Отчеты");
+                    Reports_Checked(s, e);
                     actions.Close();
                 };
 

@@ -528,11 +528,20 @@ namespace TaskManagementSystem
 
         private void ShowGradeDialog(SubmissionModel submission)
         {
-            MessageBox.Show($"Оценивание работы:\n\n" +
-                          $"Задание: {submission.TaskTitle}\n" +
-                          $"Студент: {submission.StudentName}\n" +
-                          $"Курс: {submission.CourseName}\n\n" +
-                          "Эта функция в разработке.", "Оценивание работы");
+            var dbSubmission = _context.Submissions.FirstOrDefault(s => s.Id == submission.Id);
+            if (dbSubmission != null)
+            {
+                var task = _context.Tasks.FirstOrDefault(t => t.Id == dbSubmission.TaskId);
+                if (task != null)
+                {
+                    var reviewWindow = new TeacherReviewWindow(_currentUser, task);
+                    reviewWindow.Owner = Window.GetWindow(this);
+                    reviewWindow.ShowDialog();
+
+                    LoadSubmissions();
+                    GenerateSubmissionGroups();
+                }
+            }
         }
     }
 
